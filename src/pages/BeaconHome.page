@@ -1,0 +1,305 @@
+<apex:page docType="HTML-5.0" showHeader="false" sidebar="false" controller="BeaconHomeController">
+
+	<apex:includeScript value="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js" />
+	<apex:includeScript value="/canvas/sdk/js/29.0/publisher.js"/>
+	<script type="text/javascript">
+
+		var beacon = beacon || {};
+
+		beacon.updates = {
+			lastAudioCheck : null,
+			lastOtherCheck : null
+		};
+
+		beacon.question = {
+			startDuration : 0,
+			playDuration : 0
+		};
+
+		beacon.playTimer = function(){
+
+			if(beacon.question.playDuration == 0){
+
+				// Need to do something here to go to credits
+				console.log('BANG -play');
+
+				playTimerExpired();
+
+				clearTimeout(beacon.pTimer);
+			}
+
+			var diffMinutes = Math.floor(beacon.question.playDuration / 60);
+			var diffSecs = Math.floor(beacon.question.playDuration - (diffMinutes * 60));
+
+			$('#playTimer').html('You have <h1>' + paddy(diffMinutes, 2) + ':' + paddy(diffSecs, 2) + '</h1> of tape left.');
+
+			beacon.question.playDuration--;
+		};
+
+		beacon.startTimer = function(){
+
+			if(beacon.question.startDuration == 0){
+
+				// Need to do something here to go to credits
+				console.log('BANG -start');
+
+				startTimerExpired();
+
+				clearTimeout(beacon.sTimer);
+			}
+
+			var diffMinutes = Math.floor(beacon.question.startDuration / 60);
+			var diffSecs = Math.floor(beacon.question.startDuration - (diffMinutes * 60));
+
+			$('#startTimer').html('You have <h1>' + paddy(diffMinutes, 2) + ':' + paddy(diffSecs, 2) + '</h1> before the tape is dequeued.');
+
+			beacon.question.startDuration--;
+
+		};
+
+		beacon.runEvents = function(){
+			var secsLeft = Math.floor((beacon.finish - Date.now()) / 1000);
+			var curPos = beacon.totalLength - secsLeft;
+
+			if(beacon.updates.lastOtherCheck === null){
+				beacon.updates.lastOtherCheck = curPos;
+				console.log('a ' + beacon.events);
+				//beacon.events =setTimeout(beacon.runEvents, 2000);
+			}else{
+
+				 Visualforce.remoting.Manager.invokeAction(
+            		'{!$RemoteAction.BeaconHomeController.runEvents}',
+					beacon.levelName, 
+					beacon.updates.lastOtherCheck, 
+					curPos, 
+					0, 
+					0, 
+					runEventsResult);
+				beacon.updates.lastOtherCheck = curPos;
+			}
+
+		}
+
+		function paddy(n, p, c) {
+		    var pad_char = typeof c !== 'undefined' ? c : '0';
+		    var pad = new Array(1 + p).join(pad_char);
+		    return (pad + n).slice(-pad.length);
+		};
+
+		function onDialogueEnded(isAllCompleted, channelNo){
+			$('#channelDialogue' + channelNo).off('ended');
+			$('#channelDialogue' + channelNo).attr('src', '');
+
+			if(channelNo < 5 && $('#channelDialogue' + channelNo).data('hasnext') == true){
+				$('#channelDialogue' + (channelNo + 1)).trigger('play');
+				return;
+			}
+
+			if(isAllCompleted){
+				allCompleted();
+			}else{
+				refreshPage();
+				$('#channelSoundTrack').trigger('play');
+			}
+		};
+
+		function pauseAllChannelsAndPlayDialogue(){
+			$('#channel0').trigger('pause');
+			$('#channelSoundTrack').trigger('pause');
+			setTimeout(playDialogue, 2000);
+		};
+
+		function playDialogue(){
+			$('#channelDialogue0').trigger('play');
+		};
+
+		function runEventsResult(result, event){
+
+			if(result.CorrectAnswerAudio.length > 0){
+
+				clearTimeout(beacon.pTimer);
+				clearTimeout(beacon.events);
+
+				$('#channelDialogue0').attr('src', result.CorrectAnswerAudio[0].ResourceUrl);
+				$('#channelDialogue0').attr('volume', result.CorrectAnswerAudio[0].VolumePercentage);
+				$('#channelDialogue0').on('ended', function(){onDialogueEnded(result.AllQuestionsAnswered, 0);});
+				$('#channelDialogue0').on('canplay', pauseAllChannelsAndPlayDialogue);
+
+				for(var i=1; i<result.CorrectAnswerAudio.length; i++){
+					$('#channelDialogue' + (i-1)).data('hasnext', true);
+
+					$('#channelDialogue' + i).attr('src', result.CorrectAnswerAudio[i].ResourceUrl);
+					$('#channelDialogue' + i).attr('volume', result.CorrectAnswerAudio[i].VolumePercentage);
+					$('#channelDialogue' + i).on('ended', function(){onDialogueEnded(result.AllQuestionsAnswered, i);});
+				}
+
+				for(var i=result.CorrectAnswerAudio.length; i < 5; i++){
+					$('#channelDialogue' + i).data('hasnext', false);
+					$('#channelDialogue' + i).attr('src', '');
+				}
+
+
+
+				if(result.RefreshChatter){
+					chatter.getFeed().showNewUpdates();
+					//refreshPage();
+				}
+
+				return;
+			}
+
+			for(var i=0 ; i<result.AudioEvents.length; i++){
+				if(result[i].AudioEvents.ResourceUrl != null){
+					$('#channel' + result[i].AudioEvents.Channel).attr('src', result[i].AudioEvents.ResourceUrl);
+					$('#channel' + result[i].AudioEvents.Channel).trigger('play');
+				}
+				$('#channel' + result[i].AudioEvents.Channel).attr('volume', result[i].AudioEvents.VolumePercentage);
+			}
+
+			if(result.AllQuestionsAnswered){
+				allCompleted();
+				return;
+			}
+
+			if(result.RefreshChatter){
+				chatter.getFeed().showNewUpdates();
+				//refreshPage();
+			}
+
+			if(result.CurrentQuestionAnswered){
+				refreshPage();
+			}
+
+
+			beacon.events = setTimeout(beacon.runEvents, 2000);
+		};
+
+	</script>
+
+
+
+	<apex:form id="everything">
+
+		<apex:outputPanel rendered="{!soundTrackSource != null}">
+			<audio id="channelSoundTrack" loop="true" src="{!soundTrackSource}" autoplay="true" />
+		</apex:outputPanel>
+
+		<audio id="channel0"/>
+		<audio id="channelDialogue0" />
+		<audio id="channelDialogue1" />
+		<audio id="channelDialogue2" />
+		<audio id="channelDialogue3" />
+		<audio id="channelDialogue4" />
+		
+		<apex:actionFunction action="{!refresh}" name="refreshPage"  reRender="levels, inLevel ,endLevel, refreshJs, feed"/>
+		<apex:actionFunction action="{!allCompleted}" name="allCompleted"  reRender="levels, inLevel ,endLevel, refreshJs, feed"/>
+		<apex:actionFunction action="{!playTimerExpired}" name="playTimerExpired"  reRender="levels, inLevel ,endLevel, refreshJs, feed"/>
+		<apex:actionFunction action="{!startTimerExpired}" name="startTimerExpired"  reRender="levels, inLevel ,endLevel, refreshJs, feed"/>
+
+		<apex:outputPanel id="levels">
+
+			<apex:outputPanel id="p1" rendered="{!pageStatus == 'LEVELS'}">
+				<h1>Beacon testing</h1><br/><br/>
+
+				<apex:dataTable value="{!levels}" var="level" cellpadding="5px">
+					<apex:column value="{!level.levelDetails.Name}" headerValue="Level Name" />
+					<apex:column value="{!level.levelDetails.Description}" headerValue="Synopsis" />
+
+					<apex:column value="{!level.levelSettings.Completed__c}" headerValue="Completed" />
+					<apex:column value="{!level.levelSettings.Attempts__c}" headerValue="Attempts" />
+
+					<apex:column >
+						<apex:commandLink value="Start" action="{!StartLevel}" rendered="{!ISNULL(InPlayName)}" reRender="levels, inLevel ,endLevel, refreshJs, feed">
+							<apex:param name="currentLevel" assignTo="{!currentLevelName}" value="{!level.levelSettings.Name}"/>
+						</apex:commandLink>
+						<apex:commandLink value="Continue" action="{!StartLevel}" reRender="levels, inLevel ,endLevel, refreshJs, feed" rendered="{!InPlayName == level.levelSettings.Name}">
+							<apex:param name="currentLevel" assignTo="{!currentLevelName}" value="{!level.levelSettings.Name}"/>
+						</apex:commandLink>
+					</apex:column>
+					<apex:column >
+						<apex:commandLink value="Reset (for testing)" action="{!reset}" reRender="levels, inLevel ,endLevel, refreshJs">
+							<apex:param name="currentLevel" assignTo="{!currentLevelName}" value="{!level.levelSettings.Name}"/>
+						</apex:commandLink>
+					</apex:column>
+
+				</apex:dataTable>
+
+			</apex:outputPanel>
+		</apex:outputPanel>
+
+		<apex:outputPanel id="inLevel">
+
+			<apex:outputPanel rendered="{!pageStatus == 'INLEVEL'}">
+				<!-- Put the game play stuff in here -->
+
+				<script>
+					beacon.events = setTimeout(beacon.runEvents, 0);
+					beacon.question.playDuration = {!currentLevel.currentQuestion.PlayTime};
+				</script>
+
+	  
+				<apex:outputPanel rendered="{!currentLevel.QuestionStarted != true}" id="startPanel">
+
+					<script>
+						$('.feed').hide();
+						beacon.question.startDuration = {!currentLevel.currentQuestion.LoadTime};
+						beacon.sTimer = setInterval(beacon.startTimer, 1000);
+					</script>
+
+
+					<!-- We're loading the tape -->
+					<p>{!currentLevel.currentQuestion.LoadingText}</p>
+					<p>It's loaded and in the queue</p>
+					<p id="startTimer"></p>
+
+					<apex:commandLink onclick="clearTimeout(beacon.sTimer);" action="{!startQuestion}" value="Start" reRender="levels, inLevel ,endLevel, refreshJs, feed, thefeed"/>
+
+				</apex:outputPanel>
+
+
+				<apex:outputPanel rendered="{!currentLevel.QuestionStarted == true}" id="playPanel">
+
+					<!-- This is the question side of it -->
+					<p id="playTimer"></p>
+				
+					<script>
+						$('.feed').show();
+						beacon.pTimer = setInterval(beacon.playTimer, 1000);
+					</script>
+
+				</apex:outputPanel>
+
+			</apex:outputPanel>
+
+		</apex:outputPanel>
+
+		<apex:outputPanel id="endLevel">
+
+			<apex:outputPanel rendered="{!pageStatus == 'LEVELEND'}">
+				<!-- End of level summary etc -->
+				<script>
+					$('.feed').hide();
+				</script>
+
+				<p>The closing screen</p>
+				<p>{!creditsStuff}</p>
+
+			</apex:outputPanel>
+
+		</apex:outputPanel>
+
+		<apex:outputPanel id="refreshJs">
+			<script>
+				var beacon = beacon || {};
+				beacon.levelName = '{!currentLevelName}';
+
+			</script>
+		</apex:outputPanel>
+
+	</apex:form>
+
+	<div class="feed" style="display:none;">
+		<chatter:feed entityId="{!ChatterTarget}" id="thefeed" showPublisher="false" />
+	</div>
+
+</apex:page>
