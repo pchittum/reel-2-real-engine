@@ -6,6 +6,8 @@
 
 		var beacon = beacon || {};
 
+		window.resizeTo(550, window.innerHeight);
+
 		beacon.updates = {
 			lastAudioCheck : null,
 			lastOtherCheck : null
@@ -228,6 +230,10 @@
 		</apex:outputPanel>
 
 		<apex:outputPanel id="inLevel">
+
+			<apex:outputPanel layout="block">
+				<apex:image url="{!$Resource.cassette}" width="500" />
+			</apex:outputPanel>
 
 			<apex:outputPanel rendered="{!pageStatus == 'INLEVEL'}">
 				<!-- Put the game play stuff in here -->
