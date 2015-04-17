@@ -100,8 +100,11 @@ public class LevelWrapper {
 
 		if(newQuestion != null){
 			String classname = newQuestion.getFullyQualifiedClass();
-			Question_Post__c qp = new Question_Post__c(name=LevelWrapper.settingKey(classname), Class_Name__c=classname);
-			insert qp;
+			Question_Post__c qp = Question_Post__c.getInstance(LevelWrapper.settingKey(classname));
+			if(qp == null){
+			 	qp = new Question_Post__c(name=LevelWrapper.settingKey(classname), Class_Name__c=classname);
+			 	insert qp;
+			}
 
 			this.levelSettings.Current_Question__c = qp.name;
 			update this.levelSettings;

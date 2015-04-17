@@ -18,6 +18,10 @@
 			playDuration : 0
 		};
 
+		beacon.soundTracks = JSON.parse('{!RadioClips}');
+		beacon.soundTrack = 1;
+
+
 		beacon.playTimer = function(){
 
 			if(beacon.question.playDuration == 0){
@@ -101,7 +105,10 @@
 				allCompleted();
 			}else{
 				refreshPage();
+				$('#channelSoundTrack').attr('src', beacon.soundTracks[beacon.soundTrack++]);
 				$('#channelSoundTrack').trigger('play');
+				$('div[id$="cassette"]').show();
+				$('#overlay').hide();
 			}
 		};
 
@@ -113,6 +120,9 @@
 
 		function playDialogue(){
 			$('#channelDialogue0').trigger('play');
+			window.scrollTo(0, 0);
+			$('div[id$="cassette"]').hide();
+			$('#overlay').css('display', 'table');
 		};
 
 		function runEventsResult(result, event){
@@ -179,11 +189,19 @@
 	</script>
 
 
+	<div id="overlay" style="height:100%; width:100%; z-index:10000; display:none; position:absolute; opacity: 0.8; background-color:white;">
+		<div style="display: table-cell;vertical-align: middle;">
+			<div style="width: 500px; margin-left: auto; margin-right: auto">
+				<apex:image url="{!$Resource.cassette}" width="500" />
+			</div>
+		</div>
+	</div>
 
 	<apex:form id="everything">
 
+
 		<apex:outputPanel rendered="{!soundTrackSource != null}">
-			<audio id="channelSoundTrack" loop="true" src="{!soundTrackSource}" autoplay="true" />
+			<audio id="channelSoundTrack" loop="true" src="https://www.dropbox.com/s/k6sbzczk0vj9in0/pause_welcome_samb_01.mp3?dl=1" autoplay="true" />
 		</apex:outputPanel>
 
 		<audio id="channel0"/>
@@ -231,7 +249,7 @@
 
 		<apex:outputPanel id="inLevel">
 
-			<apex:outputPanel layout="block">
+			<apex:outputPanel layout="block" id="cassette">
 				<apex:image url="{!$Resource.cassette}" width="500" />
 			</apex:outputPanel>
 
@@ -285,10 +303,133 @@
 				<!-- End of level summary etc -->
 				<script>
 					$('.feed').hide();
+					$('div[id$="cassette"]').hide();
+					$('#overlay').hide();
 				</script>
-
-				<p>The closing screen</p>
-				<p>{!creditsStuff}</p>
+				<div style="background-color:black; position:absolute; width:100%">
+					<div style="width: 500px; margin-left: auto; margin-right: auto">
+						<table style="color:white; font-size:20px; padding:100px 0px;">
+							<tr>
+								<td colspan="2" style="text-align:center; color:white; padding-top:15px;padding-bottom:10px;">
+									Based on a novel by
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2" style="text-align:center; color:white; padding-bottom:50px">
+									Will Coleman
+								</td>
+							</tr>
+							<tr >
+								<td style="text-align:right; color:white; padding-right:10px">
+									Director
+								</td>
+								<td style="color:white;padding-left:10px;">
+									Will Coleman
+								</td>
+							</tr>
+							<tr >
+								<td style="text-align:right; color:white; padding-right:10px">
+									Producer
+								</td>
+								<td style="color:white;padding-left:10px;">
+									Will Coleman
+								</td>
+							</tr>
+							<tr >
+								<td style="text-align:right; color:white; padding-right:10px">
+									Screenwriter
+								</td>
+								<td style="color:white;padding-left:10px;">
+									Will Coleman
+								</td>
+							</tr>
+							<tr >
+								<td style="text-align:right; color:white; padding-right:10px">
+									Sound Engineer
+								</td>
+								<td style="color:white;padding-left:10px;">
+									Will Coleman
+								</td>
+							</tr>
+							<tr >
+								<td style="text-align:right; color:white; padding-right:10px">
+									Gaffer
+								</td>
+								<td style="color:white;padding-left:10px;">
+									Will Coleman
+								</td>
+							</tr>
+							<tr >
+								<td style="text-align:right; color:white; padding-right:10px">
+									Tea boy
+								</td>
+								<td style="color:white;padding-left:10px;">
+									Will Coleman
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2" style="text-align:center; color:white; padding-top:50px;padding-bottom:10px;">
+									None of the following were ever involved
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2" style="text-align:center; color:white;">
+									Simon Goodyear
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2" style="text-align:center; color:white;">
+									Rob Goodman
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2" style="text-align:center; color:white;">
+									Peter **REDACTED**
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2" style="text-align:center; color:white;">
+									Paul Battisson
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2" style="text-align:center; color:white;">
+									Clive Howard
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2" style="text-align:center; color:white;">
+									Alex Tennant
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2" style="text-align:center; color:white;">
+									Simon James
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2" style="text-align:center; color:white;">
+									Lorraine Sheridan
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2" style="text-align:center; color:white;">
+									Doug Merrett
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2" style="text-align:center; color:white;">
+									Mark Quirk
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2" style="text-align:center; color:white;">
+									Neil Cargill
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
 
 			</apex:outputPanel>
 
@@ -307,5 +448,7 @@
 	<div class="feed" style="display:none;">
 		<chatter:feed entityId="{!ChatterTarget}" id="thefeed" showPublisher="false" />
 	</div>
+
+
 
 </apex:page>

@@ -1,7 +1,6 @@
 public with sharing class BeaconHomeController {
 	
 	public BeaconHomeController() {
-
 		pageStatus = 'LEVELS';
 	}
 
@@ -239,6 +238,22 @@ public with sharing class BeaconHomeController {
 		system.debug('oeRet ' + oeRet);
 
 		return oeRet;
+	}
+
+	public List<String> RadioClips{
+		get{
+			// TODO this definately should be pushed out into the interface, being naughty for now.
+			return new List<String>{
+				'"https://www.dropbox.com/s/kidemzeldcjfwu7/pause_wowandflutter_amb_01.mp3?dl=1"',
+				'"https://www.dropbox.com/s/k26mfepcfvll9jn/pause_eject_sunamb_02_darker.mp3?dl=1"',
+				'"https://www.dropbox.com/s/ynt1v0y604lfgn2/pause_favorites_amb_04.mp3?dl=1"',
+				'"https://www.dropbox.com/s/pzveg97wz2ksyr0/pause_tangled_nexttips_samb_1.mp3?dl=1"',
+				'"https://www.dropbox.com/s/nxxq0j1vbwe1ejr/pause_sebastian_sunamb_01.mp3?dl=1"',
+				'"https://www.dropbox.com/s/lkcs86fgoeqrmmm/pause_aroused_amb_04_drifting.mp3?dl=1"',
+				'"https://www.dropbox.com/s/pzgovlpn2sfvyh9/pause_nextbrainwaves_samb_06.mp3?dl=1"',
+				'"https://www.dropbox.com/s/24rilvt4cp1zvp0/pause_mindtangled_amb_01.mp3?dl=1"'
+			};
+		}
 	}
 
 	public PageReference startTimerExpired(){
