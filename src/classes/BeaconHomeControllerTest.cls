@@ -13,7 +13,7 @@ private class BeaconHomeControllerTest {
 
 		Beacon.registerLevel(new LevelTest());
 		levelName = Level__c.getAll().values()[0].Name;
-
+        
 		Audio_Event__c ae=  new Audio_Event__c(Name='bob', Channel__c=0, ResourceUrl__c='hello', Volume_Percentage__c=0.5);
 		insert ae;
 	}
@@ -27,11 +27,14 @@ private class BeaconHomeControllerTest {
 		system.assertEquals('LEVELS', con.pageStatus);
 		system.assertEquals(1, con.levels.size());
 
+        system.assertEquals(1, con.levelCount);
+
 		con.currentLevelName = levelName;
 
 		system.assertNotEquals(null, con.currentLevel);
 
 		system.assertNotEquals(null, con.soundTrackSource);
+        system.assertNotEquals(null, con.RadioClips);
 
 
 		system.assertEquals(null, con.InPlayName);
@@ -124,6 +127,7 @@ private class BeaconHomeControllerTest {
 		system.assertNotEquals(null, qff.getFirstPost());
 		system.assertEquals(null, qff.getWrongAnswerAudioClips());
 		system.assertNotEquals(null, qff.getNextQuestion());
+		system.assertNotEquals(null, qff.getCorrectAnswerAudioClips());
 
 
 

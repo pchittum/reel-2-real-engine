@@ -1,14 +1,14 @@
-public class QuestionFromFile implements IQuestion, IQuestionV3{
+global class QuestionFromFile implements IQuestion, IQuestionV3{
 
 	private QuestionFile theFile;
 
-	public QuestionFromFile(){}
+	global QuestionFromFile(){}
 
 	public QuestionFromFile(QuestionFile theFile){
 		this.theFile = theFile;
 	}
 
-	public QuestionFromFile(String fileName){
+	global QuestionFromFile(String fileName){
 
 		List<StaticResource> res = [SELECT Body FROM StaticResource WHERE Name = :filename];
 
