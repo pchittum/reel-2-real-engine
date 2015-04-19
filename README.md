@@ -32,4 +32,130 @@ This custom setting has the following fields for the quest author to fill in:
 | Time Spent          | Beacon_Game__Time_Spent__c	     | Number(18, 0)                       |
 | Update Chatter      | Beacon_Game__Update_Chatter__c   | Checkbox                            |
 
-In order to define a level you must populate this custom setting with the correct information. The class name should be the fully qualified class name of the class implementing the interfaces mentioned above.
+In order to define a level you must populate this custom setting filling in the class name with the fully qualified class name for the class implementing ILevel and ILevel2.
+
+#### Defining an Adventure (Level Class)
+
+To define an Adventure you need to create a class that implements the ILevel and ILevel2 interfaces, an example implementation is shown below:
+
+```apex
+public class LevelExample implements ILevel, ILevelv2{
+
+	private static final String CURRENTQUESTION = 'Current Question';
+
+	public String getName(){
+		return 'Example Level';
+	}
+
+	public String getDescription(){
+		return 'Some stuff.';
+	}
+
+	public Integer getExpectedDuration(){
+		return 15 * 60;
+	}
+
+	public Integer getAllowedDuration(){
+		return 15 * 60;
+	}
+
+	public String getFullyQualifiedClass(){
+		return 'LevelExample';
+	}
+
+	public Id getSoundTrackId(){
+		return null;
+	}
+
+	public String getSoundTrackUrl(){
+		return 'https://youtu.be/Isid4LLy9g0';
+	}
+
+	public List<AudioEvent> getAudioEvents(){
+
+		List<AudioEvent> ret = new List<AudioEvent>();
+
+		return ret;
+	}
+
+	public List<ChatterEvent> getChatterEvents(){
+
+		List<ChatterEvent> ret = new List<ChatterEvent>();
+
+		return ret;
+	}
+
+	public ChatterEvent readPlayersChatterComment(FeedComment chatterComment, String questionId){
+
+		ChatterEvent ret;
+
+		if(chatterComment.CommentBody.Trim() == 'right'){
+			return ret;
+		}else{
+			ret = wrongAnswer();
+		}
+
+		return ret;
+	}
+
+	public IQuestion getFirstQuestion(){
+		return new QuestionExample();
+	}
+
+	private ChatterEvent wrongAnswer(){
+
+		ChatterEvent ret = new ChatterEvent(new FeedComment());
+
+		Integer rand = Integer.valueOf(Math.ceil(Math.random() * 2));
+
+		if(rand == 1){
+			ret.PostComment.CommentBody = 'Are you sure about that?';
+		}else if(rand == 2){
+			ret.PostComment.CommentBody = 'With answers like that you should just walk away from the computer, try again.';
+		}else{
+			ret.PostComment.CommentBody = 'I\'m sorry, I don\'t understand that.';
+		}
+
+		return ret;
+
+	}
+
+	public Boolean isFileBased(){
+		return true;
+	}
+
+	public String firstFileName(){
+		return 'Question1';
+	}
+
+}
+```
+
+This Adventure utilises the Quest (Question) defined below.
+
+#### Defining a Quest (Question File)
+
+To define a Question you must create a static resource that is a serialised implementation of the QuestionFile class. An example implementation file is shown below:
+
+```json
+{
+	"filename": "Question1",
+	"loadTime": 30,
+	"playTime": 600,
+	"loadingText": "That's great. We're just loading the first tape.",
+	"question": "Who are you?",
+	"answers": [
+					{
+						"answer": "Type this to win",
+						"response": "Well done, aren't you clever.",
+						"correctAudio": ["link/to/audio/1", "link/to/audio/2"]
+					},
+					{
+						"answer": "I am now writing things",
+						"response": "Oooo lucky you.",
+						"correctAudio": ["link/to/audio/3", "link/to/audio/4"]
+					}
+				],
+	"nextQuestion": ""
+}
+```
