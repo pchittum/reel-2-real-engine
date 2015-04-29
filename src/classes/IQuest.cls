@@ -1,4 +1,4 @@
-global interface IQuestion {
+global interface IQuest {
 
 	String getFullyQualifiedClass();
 
@@ -8,7 +8,7 @@ global interface IQuestion {
 	List<AudioEvent> getAudioEvents();
 	List<ChatterEvent> getChatterEvents();
 
-	IQuestion getNextQuestion();
+	IQuest getNextQuest();
 
 	String getLoadingText();
 
@@ -16,6 +16,8 @@ global interface IQuestion {
 
 	ChatterEvent getFirstPost();
 
+	List<AudioEvent> getCorrectAnswerAudioClips();
+	List<AudioEvent> getWrongAnswerAudioClips(); // reserved for future use
 
 
 }

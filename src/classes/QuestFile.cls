@@ -1,4 +1,4 @@
-public class QuestionFile {
+public class QuestFile {
 
 
 	public String filename {get; set;}
@@ -7,7 +7,7 @@ public class QuestionFile {
 	public String loadingText {get; set;}
 	public String question {get; set;}
 	public List<Answer> answers {get; set;}
-	public String nextQuestion {get; set;}
+	public String nextQuest {get; set;}
 
 	public class Answer{
 		public String answer {get; set;}

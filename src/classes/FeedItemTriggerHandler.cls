@@ -13,16 +13,16 @@ public class FeedItemTriggerHandler {
 
 		List<ChatterEvent> responses = new List<ChatterEvent>();
 
-		List<Level__c> levels = [SELECT Name, Class_Name__c, Current_Question__c FROM Level__c WHERE In_Play__c = true];
-		if(levels.isEmpty())
+		List<Adventure__c> adventures = [SELECT Name, Class_Name__c, Current_Quest__c FROM Adventure__c WHERE In_Play__c = true];
+		if(adventures.isEmpty())
 			return;
 
-		LevelWrapper level = new LevelWrapper(levels[0]);
+		AdventureWrapper adventure = new AdventureWrapper(adventures[0]);
 
-		if(level.getCurrentQuestionSettings().Answered__c)
+		if(adventure.getCurrentQuestSettings().Answered__c)
 			return;
 
-		Question_Post__c qp = level.getCurrentQuestionSettings();
+		Quest_Post__c qp = adventure.getCurrentQuestSettings();
 
 		for(FeedComment comment : feedComments){
 
@@ -32,7 +32,7 @@ public class FeedItemTriggerHandler {
 			if(qp.Post_Id__c != comment.FeedItemId || qp.Answered__c)
 				continue;
 
-			responses.add(level.getCurrentQuestion().readPlayersChatterComment(comment, qp.Question_Id__c));
+			responses.add(adventure.getCurrentQuest().readPlayersChatterComment(comment, qp.Quest_Id__c));
 
 		}
 
@@ -58,8 +58,8 @@ public class FeedItemTriggerHandler {
 		insert items;
 
 		if(!comments.isEmpty() || !items.isEmpty()){
-			level.levelSettings.Update_Chatter__c = true;
-			update level.levelSettings;
+			adventure.adventureSettings.Update_Chatter__c = true;
+			update adventure.adventureSettings;
 		}
 
 	}

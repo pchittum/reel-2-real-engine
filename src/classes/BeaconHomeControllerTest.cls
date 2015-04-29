@@ -1,7 +1,7 @@
 @isTest
 private class BeaconHomeControllerTest {
 
-	private static String levelName;
+	private static String AdventureName;
 
 	private static void setup(){
 
@@ -11,8 +11,8 @@ private class BeaconHomeControllerTest {
 		Beacon.saveSetting('TheGuideId', UserInfo.getUserId());
 		Beacon.saveSetting('TheGroupId', cg.Id);
 
-		Beacon.registerLevel(new LevelTest());
-		levelName = Level__c.getAll().values()[0].Name;
+		Beacon.registerAdventure(new AdventureTest());
+		AdventureName = Adventure__c.getAll().values()[0].Name;
         
 		Audio_Event__c ae=  new Audio_Event__c(Name='bob', Channel__c=0, ResourceUrl__c='hello', Volume_Percentage__c=0.5);
 		insert ae;
@@ -24,25 +24,24 @@ private class BeaconHomeControllerTest {
 
 		BeaconHomeController con = new BeaconHomeController();
 
-		system.assertEquals('LEVELS', con.pageStatus);
-		system.assertEquals(1, con.levels.size());
+		system.assertEquals('AdventureS', con.pageStatus);
+		system.assertEquals(1, con.Adventures.size());
 
-        system.assertEquals(1, con.levelCount);
+        system.assertEquals(1, con.AdventureCount);
 
-		con.currentLevelName = levelName;
+		con.currentAdventureName = AdventureName;
 
-		system.assertNotEquals(null, con.currentLevel);
+		system.assertNotEquals(null, con.currentAdventure);
 
-		system.assertNotEquals(null, con.soundTrackSource);
         system.assertNotEquals(null, con.RadioClips);
 
 
 		system.assertEquals(null, con.InPlayName);
-		con.StartLevel();
-		system.assertEquals(levelName, con.InPlayName);
+		con.StartAdventure();
+		system.assertEquals(AdventureName, con.InPlayName);
 
 
-		con.startQuestion();
+		con.startQuest();
 		List<FeedItem> fis = [SELECT Id FROM FeedItem];
 		system.assertEquals(1, fis.size());
 
@@ -55,11 +54,11 @@ private class BeaconHomeControllerTest {
 		system.assertEquals(null, con.allCompleted());
 		system.assertEquals(null, con.refresh());
 
-		BeaconHomeController.Events evts = BeaconHomeController.runEvents(levelName, 0, 0, 10, 0);
+		BeaconHomeController.Events evts = BeaconHomeController.runEvents(AdventureName, 0, 0, 10, 0);
 
 		system.assertNotEquals(null, evts);
-		system.assertEquals(null, con.currentLevel.getNextQuestion());
-		system.assertEquals(true, con.currentLevel.getQuestionStarted());
+		system.assertEquals(null, con.currentAdventure.getNextQuest());
+		system.assertEquals(true, con.currentAdventure.getQuestStarted());
 
 		FeedComment fc = new FeedComment(FeedItemId=fis[0].Id, CommentBody='right');
 		insert fc;
@@ -85,21 +84,21 @@ private class BeaconHomeControllerTest {
 		ChatterEvent ce =new ChatterEvent(new FeedItem(), 0);
 
 
-		Beacon.markQuestionAnswered(con.currentLevel.getCurrentQuestion());
+		Beacon.markQuestAnswered(con.currentAdventure.getCurrentQuest());
 
 
-		system.assertNotEquals(0, Question_Post__c.getAll().size());
+		system.assertNotEquals(0, Quest_Post__c.getAll().size());
 		con.Reset();
-		system.assertEquals(0, Question_Post__c.getAll().size());
+		system.assertEquals(0, Quest_Post__c.getAll().size());
 
-		LevelWrapper lw = new LevelWrapper(con.currentLevel.levelDetails);
+		AdventureWrapper lw = new AdventureWrapper(con.currentAdventure.AdventureDetails);
 		Beacon.deleteSetting('TheGroupId');
 
 	}
 
-	private static testMethod void questionFile(){
+	private static testMethod void questFile(){
 
-		QuestionFile qf = new QuestionFile();
+		QuestFile qf = new QuestFile();
 
 		qf.filename = 'hh';
 		qf.loadTime = 10;
@@ -107,16 +106,16 @@ private class BeaconHomeControllerTest {
 		qf.loadingText = 'oo';
 		qf.question = 'klj';
 
-		QuestionFile.Answer ans = new QuestionFile.Answer();
+		QuestFile.Answer ans = new QuestFile.Answer();
 		ans.answer = 'll';
 		ans.response = 'oo';
 		ans.correctAudio = new List<String>{'https://www.dropbox.com/s/nmcgtoj8nl5frxb/cust_s02.mp3?dl=1'};
 
-		qf.answers = new List<QuestionFile.Answer>{ans};
-		qf.nextQuestion = 'TestQuestion1';
+		qf.answers = new List<QuestFile.Answer>{ans};
+		qf.nextQuest = 'TestQuest1';
 
 
-		QuestionFromFile qff = new QuestionFromFile(qf);
+		QuestFromFile qff = new QuestFromFile(qf);
 
 		system.assertNotEquals(null, qff.getFullyQualifiedClass());
 		system.assertNotEquals(null, qff.getLoadTime());
@@ -126,7 +125,7 @@ private class BeaconHomeControllerTest {
 		system.assertNotEquals(null, qff.getLoadingText());
 		system.assertNotEquals(null, qff.getFirstPost());
 		system.assertEquals(null, qff.getWrongAnswerAudioClips());
-		system.assertNotEquals(null, qff.getNextQuestion());
+		system.assertNotEquals(null, qff.getNextQuest());
 		system.assertNotEquals(null, qff.getCorrectAnswerAudioClips());
 
 

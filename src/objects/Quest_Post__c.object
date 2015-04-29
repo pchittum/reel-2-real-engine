@@ -35,7 +35,7 @@
         <unique>false</unique>
     </fields>
     <fields>
-        <fullName>Question_Id__c</fullName>
+        <fullName>Quest_Id__c</fullName>
         <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Question Id</label>
@@ -54,5 +54,5 @@
         <trackTrending>false</trackTrending>
         <type>Checkbox</type>
     </fields>
-    <label>Question Post</label>
+    <label>Quest Post</label>
 </CustomObject>

@@ -38,7 +38,7 @@
         <type>Checkbox</type>
     </fields>
     <fields>
-        <fullName>Current_Question__c</fullName>
+        <fullName>Current_Quest__c</fullName>
         <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Current Question</label>
@@ -89,5 +89,5 @@
         <trackTrending>false</trackTrending>
         <type>Checkbox</type>
     </fields>
-    <label>Level</label>
+    <label>Adventure</label>
 </CustomObject>
