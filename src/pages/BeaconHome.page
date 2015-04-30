@@ -245,7 +245,7 @@
 				<apex:image url="{!$Resource.cassette}" width="500" />
 			</apex:outputPanel>
 
-			<apex:outputPanel rendered="{!pageStatus == 'INadventure'}">
+			<apex:outputPanel rendered="{!pageStatus == 'INADVENTURE'}">
 				<!-- Put the game play stuff in here -->
 
 				<script>

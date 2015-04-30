@@ -59,7 +59,7 @@ public with sharing class BeaconHomeController {
 
 	public PageReference StartAdventure(){
 
-		pageStatus = 'INLEVEL';
+		pageStatus = 'INADVENTURE';
 
 		if(!currentAdventure.adventureSettings.In_Play__c){
 			currentAdventure.adventureSettings.In_Play__c = true;

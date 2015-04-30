@@ -56,6 +56,8 @@
 	</types>
 	<types>
 		<members>TestQuestion1</members>
+		<members>TestAdventure1</members>
+		<members>cassette</members>
 		<name>StaticResource</name>
 	</types>
 	<version>33.0</version>
