@@ -20,7 +20,7 @@ global class Beacon {
 
 	global static String readSetting(String name){
 
-		GeneralSetting__c setting = GeneralSetting__c.getInstance(UserInfo.getUserId() + name);
+		GeneralSetting__c setting = GeneralSetting__c.getInstance(name);
 		
 		if(setting == null)
 			return null;
@@ -31,10 +31,10 @@ global class Beacon {
 
 	global static void saveSetting(String name, String value){
 
-		GeneralSetting__c setting = GeneralSetting__c.getInstance(UserInfo.getUserId() + name);
+		GeneralSetting__c setting = GeneralSetting__c.getInstance(name);
 
 		if(setting == null)
-			setting = new generalSetting__c(Name = UserInfo.getUserId() + name);
+			setting = new generalSetting__c(Name = name);
 
 		setting.value__c = value;
 
@@ -44,7 +44,7 @@ global class Beacon {
 
 	global static void deleteSetting(String name){
 
-		GeneralSetting__c setting = GeneralSetting__c.getInstance(UserInfo.getUserId() + name);
+		GeneralSetting__c setting = GeneralSetting__c.getInstance(name);
 
 		if(setting != null)
 			delete setting;
