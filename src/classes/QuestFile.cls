@@ -1,18 +1,18 @@
 public class QuestFile {
 
 
-	public String filename {get; set;}
-	public Integer loadTime {get; set;}
-	public Integer playTime {get; set;}
-	public String loadingText {get; set;}
-	public String question {get; set;}
-	public List<Answer> answers {get; set;}
-	public String nextQuest {get; set;}
+	public String Filename {get; set;}
+	public Integer LoadTime {get; set;}
+	public Integer PlayTime {get; set;}
+	public String LoadingText {get; set;}
+	public String Question {get; set;}
+	public List<Answer> Answers {get; set;}
+	public String NextQuest {get; set;}
 
 	public class Answer{
-		public String answer {get; set;}
-		public String response {get; set;}
-		public List<String> correctAudio {get; set;}
+		public String Answer {get; set;}
+		public String Response {get; set;}
+		public List<String> CorrectAudio {get; set;}
 	}
 
 }

@@ -6,9 +6,6 @@ global interface IAdventure {
 	String getDescription();
 
 	Integer getAllowedDuration();
-	Integer getExpectedDuration();
-
-	String getSoundTrackUrl();
 
 	IQuest getFirstQuest();
 
