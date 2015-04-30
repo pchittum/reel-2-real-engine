@@ -12,7 +12,7 @@ global class Beacon {
 		if(l != null)
 			return false;
 
-		l = new Adventure__c(name=String.valueOf(settingKey), Class_Name__c=className);
+		l = new Adventure__c(name=String.valueOf(settingKey), Class_Name__c=className, Is_File_Based__c=adventure.isFileBased());
 		insert l;
 
 		return true;

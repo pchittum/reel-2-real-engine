@@ -22,7 +22,11 @@ public class AdventureWrapper {
 		}
 		
 		try{
-			this.AdventureDetails = (IAdventure)Type.forName(ns, cls).newInstance();
+			if(this.AdventureSettings.Is_File_Based__c){
+				this.AdventureDetails = new AdventureFromFile(this.AdventureSettings.Class_Name__c);
+			}else{	
+				this.AdventureDetails = (IAdventure)Type.forName(ns, cls).newInstance();
+			}
 		}catch(Exception ex){
 			throw new ChannelException('AdventureSettings ' + this.AdventureSettings.Class_Name__c);
 		}
