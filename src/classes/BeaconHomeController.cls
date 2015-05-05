@@ -208,6 +208,45 @@ public with sharing class BeaconHomeController {
 		return null;
 	}
 
+	@RemoteAction
+	public static void moveTape(Integer seconds){
+
+		checkPushTopic();
+
+		Machine_Request__c mrq = new Machine_Request__c(SecondsToMoveTape__c = seconds);
+		insert mrq;
+
+	}
+
+	@RemoteAction
+	public static void openDrawer(){
+
+		checkPushTopic();
+
+		Machine_Request__c mrq = new Machine_Request__c(OpenDrawer__c = true);
+		insert mrq;
+
+	}
+
+	private static void checkPushTopic(){
+
+		if([SELECT Count() FROM PushTopic WHERE Name = 'NewRequests'] == 0){
+
+			PushTopic pushTopic = new PushTopic();
+			pushTopic.Name = 'NewRequests';
+			pushTopic.Query = 'SELECT Id, OpenDrawer__c, PulseStartLED__c, SecondsToMoveTape__c, Completed__c FROM Machine_Request__c where Completed__c = false';
+			pushTopic.ApiVersion = 33.0;
+			pushTopic.Description = 'Created or updated MachineRequests without Completed flag set';
+			pushTopic.NotifyForOperationCreate = true;
+			pushTopic.NotifyForOperationUpdate = true;
+			pushTopic.NotifyForOperationUndelete = false;
+			pushTopic.NotifyForOperationDelete = false;
+			pushTopic.NotifyForFields = 'Referenced';
+			insert pushTopic;
+		
+		}
+	}
+
 	public class Events{
 		public Boolean RefreshChatter {get; set;}
 		public Boolean CurrentQuestAnswered {get; set;}

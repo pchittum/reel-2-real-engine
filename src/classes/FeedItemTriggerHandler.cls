@@ -13,7 +13,7 @@ public class FeedItemTriggerHandler {
 
 		List<ChatterEvent> responses = new List<ChatterEvent>();
 
-		List<Adventure__c> adventures = [SELECT Name, Class_Name__c, Current_Quest__c FROM Adventure__c WHERE In_Play__c = true];
+		List<Adventure__c> adventures = [SELECT Name, Is_File_Based__c, Class_Name__c, Current_Quest__c FROM Adventure__c WHERE In_Play__c = true];
 		if(adventures.isEmpty())
 			return;
 

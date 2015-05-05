@@ -52,6 +52,7 @@
 		<members>GeneralSetting__c</members>
 		<members>Adventure__c</members>
 		<members>Quest_Post__c</members>
+        <members>Machine_Request__c</members>
 		<name>CustomObject</name>
 	</types>
 	<types>
