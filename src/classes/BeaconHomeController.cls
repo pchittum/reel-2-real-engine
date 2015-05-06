@@ -1,72 +1,55 @@
 public with sharing class BeaconHomeController {
 	
 	public BeaconHomeController() {
-		pageStatus = 'LEVELS';
+		pageStatus = 'ADVENTURES';
 	}
 
 	public String creditsStuff {get; set;}
 	public String pageStatus {get; set;}
-	public String currentLevelName {get; set;}
+	public String currentAdventureName {get; set;}
 
-	public Integer levelCount{
+	public Integer adventureCount{
 		get{
-			return Level__c.getAll().size();
+			return Adventure__c.getAll().size();
 		}
 	}
 
-	public List<LevelWrapper> levels{
+	public List<AdventureWrapper> adventures{
 		get{
 
-			if(levels == null || levels.isEmpty()){
-				levels = new List<LevelWrapper>();
+			if(adventures == null || adventures.isEmpty()){
+				adventures = new List<AdventureWrapper>();
 
-				for(Level__c level : Level__c.getAll().values()){
-					levels.add(new LevelWrapper(level));
+				for(Adventure__c level : Adventure__c.getAll().values()){
+					adventures.add(new AdventureWrapper(level));
 				}
 			}
 
-			return levels;
+			return adventures;
 
 		}
 		private set;
 	}
 
-	public LevelWrapper currentLevel{
+	public AdventureWrapper currentAdventure{
 		get{
-			if(currentLevel == null){
-				currentLevel = new LevelWrapper(currentLevelName);
+			if(currentAdventure == null){
+				currentAdventure = new AdventureWrapper(currentAdventureName);
 			}
 
-			return currentLevel;
+			return currentAdventure;
 		}
 		private set;
-	}
-
-	public String soundTrackSource{
-		get{
-			if(currentLevel.levelDetails.getSoundTrackId() != null){
-
-				List<StaticResource> resources = [SELECT Name, ContentType, NamespacePrefix, SystemModstamp FROM StaticResource WHERE Id = :currentLevel.levelDetails.getSoundTrackId()];
-				if(resources.isEmpty())
-					return null;
-
-				return '/resource/' + resources[0].SystemModstamp.getTime() + '/' + (resources[0].NamespacePrefix == null ? '' : resources[0].NamespacePrefix + '__') + resources[0].Name;
-			}else if(currentLevel.levelDetails.getSoundTrackUrl() != null){
-				return currentLevel.levelDetails.getSoundTrackUrl();
-			}
-
-			return null;
-		}
 	}
 
 	public String InPlayName{
 		get{
 			if(InPlayName == null){
-				List<Level__c> levels = [SELECT Name FROM Level__c WHERE In_Play__c = true];
-				if(levels.isEmpty())
+				List<Adventure__c> adventures = [SELECT Name FROM Adventure__c WHERE In_Play__c = true];
+				if(adventures.isEmpty())
 					InPlayName = null;
 				else
-					InPlayName = levels[0].Name;
+					InPlayName = adventures[0].Name;
 			}
 
 			return InPlayName;
@@ -74,16 +57,16 @@ public with sharing class BeaconHomeController {
 		private set;
 	}
 
-	public PageReference StartLevel(){
+	public PageReference StartAdventure(){
 
-		pageStatus = 'INLEVEL';
+		pageStatus = 'INADVENTURE';
 
-		if(!currentLevel.levelSettings.In_Play__c){
-			currentLevel.levelSettings.In_Play__c = true;
-			currentLevel.levelSettings.Last_Started__c = System.now();
-			currentLevel.levelSettings.Attempts__c++;
-			currentLevel.getCurrentQuestionSettings();
-			update currentLevel.levelSettings;
+		if(!currentAdventure.adventureSettings.In_Play__c){
+			currentAdventure.adventureSettings.In_Play__c = true;
+			currentAdventure.adventureSettings.Last_Started__c = System.now();
+			currentAdventure.adventureSettings.Attempts__c++;
+			currentAdventure.getCurrentQuestSettings();
+			update currentAdventure.adventureSettings;
 		}
 
 
@@ -92,26 +75,26 @@ public with sharing class BeaconHomeController {
 
 	public PageReference Reset(){
 
-		delete [SELECT Id FROM Question_Post__c];
+		delete [SELECT Id FROM Quest_Post__c];
 
-		currentLevel.levelSettings.In_Play__c = false;
-		currentLevel.levelSettings.Current_Question__c = null;
+		currentAdventure.adventureSettings.In_Play__c = false;
+		currentAdventure.adventureSettings.Current_Quest__c = null;
 		InPlayName = null;
-		update currentLevel.levelSettings;		
+		update currentAdventure.adventureSettings;		
 
 		delete [SELECT Id FROM FeedItem WHERE ParentId = :Beacon.readSetting('TheGroupId')];
 
 		return null;
 	}
 
-	public PageReference startQuestion(){
+	public PageReference startQuest(){
 
-		Question_Post__c qp = currentLevel.getCurrentQuestionSettings();
+		Quest_Post__c qp = currentAdventure.getCurrentQuestSettings();
 		qp.Started__c = true;
 		update qp;
 
 
-		ChatterEvent ce = currentLevel.getCurrentQuestion().getFirstPost();
+		ChatterEvent ce = currentAdventure.getCurrentQuest().getFirstPost();
 
 		if(ce.PostDetails != null){
 			ce.PostDetails.CreatedById = Beacon.readSetting('TheGuideId');
@@ -133,39 +116,10 @@ public with sharing class BeaconHomeController {
 		}
 	}
 
-	private static List<AudioEvent> getAudioEvents(String levelName, Integer lastCheckLevel, Integer thisCheckLevel, Integer lastCheckQuestion, Integer thisCheckQuestion){
+	private static List<AudioEvent> getAudioEvents(String levelName, Integer lastCheckLevel, Integer thisCheckLevel, Integer lastCheckQuest, Integer thisCheckQuest){
 
-		LevelWrapper lvl = new LevelWrapper(levelName);
+		AdventureWrapper lvl = new AdventureWrapper(levelName);
 		List<AudioEvent> events = new List<AudioEvent>();
-
-		// Level based timed events
-		List<AudioEvent> levelAudioEvents = lvl.levelDetails.getAudioEvents();
-
-		if(levelAudioEvents != null && !levelAudioEvents.isEmpty()){
-
-			for(AudioEvent ae : lvl.levelDetails.getAudioEvents()){
-
-				if(ae.Start > lastCheckLevel && ae.Start <= thisCheckLevel){
-					events.add(ae);
-				}
-
-			}
-		}
-
-		// Question based timed events
-		List<AudioEvent> questionAudioEvents = lvl.levelDetails.getAudioEvents();
-
-		if(questionAudioEvents != null && !questionAudioEvents.isEmpty()){
-
-			for(AudioEvent ae : lvl.getCurrentQuestion().getAudioEvents()){
-
-				if(ae.Start > lastCheckQuestion && ae.Start <= thisCheckQuestion){
-					events.add(ae);
-				}
-
-			}
-		}
-
 
 		// Random events pushed into settings as they are needed
 		for(Audio_Event__c aeSetting : Audio_Event__c.getAll().values()){
@@ -173,9 +127,6 @@ public with sharing class BeaconHomeController {
 			AudioEvent ae = new AudioEvent();
 			if(aeSetting.ResourceUrl__c != null)
 				ae.ResourceUrl = aeSetting.ResourceUrl__c;
-
-			if(aeSetting.Resource_Id__c != null)
-				ae.updateUrlFromId(aeSetting.Resource_Id__c);
 
 			ae.VolumePercentage = aeSetting.Volume_Percentage__c;
 			ae.Channel = Integer.valueOf(aeSetting.Channel__c);
@@ -191,49 +142,27 @@ public with sharing class BeaconHomeController {
 	}
 
 	@RemoteAction
-	public static Events runEvents(String levelName, Integer lastCheckLevel, Integer thisCheckLevel, Integer lastCheckQuestion, Integer thisCheckQuestion){
+	public static Events runEvents(String levelName, Integer lastCheckLevel, Integer thisCheckLevel, Integer lastCheckQuest, Integer thisCheckQuest){
 
 		Events oeRet = new Events();
-		LevelWrapper lvl = new LevelWrapper(levelName);
+		AdventureWrapper lvl = new AdventureWrapper(levelName);
 
-		//Chatter events - time based
-		List<FeedItem> feedItems = new List<FeedItem>();
-		for(ChatterEvent ce : lvl.levelDetails.getChatterEvents()){
-			if(ce.Start > lastCheckLevel && ce.Start <= thisCheckLevel){
-				oeRet.RefreshChatter = true;
-				if(ce.PostDetails.CreatedById == null || ce.PostDetails.CreatedById == UserInfo.getUserId())
-					ce.PostDetails.CreatedById = Beacon.readSetting('TheGuideId');
-
-				feedItems.add(ce.PostDetails);
-			}
-		}
-		insert feedItems;
-
-		// There may be new items in the feed from other sources
-		if(lvl.levelSettings.Update_Chatter__c){
-			oeRet.RefreshChatter = true;
-			lvl.levelSettings.Update_Chatter__c = false;
-			update lvl.levelSettings;
-		}
-
-		// Have they successfully answered the question?
-		if(lvl.getCurrentQuestionSettings().Answered__c){
+		// Have they successfully answered the quest?
+		if(lvl.getCurrentQuestSettings().Answered__c){
 			
-			oeRet.CurrentQuestionAnswered = true;
-			if(lvl.getCurrentQuestion() instanceof IQuestionV3){
-				IQuestionV3 q3 = (IQuestionV3)lvl.getCurrentQuestion();
-				oeRet.CorrectAnswerAudio = q3.getCorrectAnswerAudioClips();
-			}
+			oeRet.CurrentQuestAnswered = true;
+			IQuest q3 = lvl.getCurrentQuest();
+			oeRet.CorrectAnswerAudio = q3.getCorrectAnswerAudioClips();
 
-			IQuestion q = lvl.getNextQuestion();
+			IQuest q = lvl.getNextQuest();
 
 			if(q == null)
-				oeRet.AllQuestionsAnswered = true;
+				oeRet.AllQuestsAnswered = true;
 
 		}
 
 		// Populate audio events
-		oeRet.AudioEvents = getAudioEvents(levelName, lastCheckLevel, thisCheckLevel, lastCheckQuestion, thisCheckQuestion);
+		oeRet.AudioEvents = getAudioEvents(levelName, lastCheckLevel, thisCheckLevel, lastCheckQuest, thisCheckQuest);
 
 		system.debug('oeRet ' + oeRet);
 
@@ -275,21 +204,60 @@ public with sharing class BeaconHomeController {
 	}
 
 	public PageReference refresh(){
-		currentLevel = null;
+		currentAdventure = null;
 		return null;
+	}
+
+	@RemoteAction
+	public static void moveTape(Integer seconds){
+
+		checkPushTopic();
+
+		Machine_Request__c mrq = new Machine_Request__c(SecondsToMoveTape__c = seconds);
+		insert mrq;
+
+	}
+
+	@RemoteAction
+	public static void openDrawer(){
+
+		checkPushTopic();
+
+		Machine_Request__c mrq = new Machine_Request__c(OpenDrawer__c = true);
+		insert mrq;
+
+	}
+
+	private static void checkPushTopic(){
+
+		if([SELECT Count() FROM PushTopic WHERE Name = 'NewRequests'] == 0){
+
+			PushTopic pushTopic = new PushTopic();
+			pushTopic.Name = 'NewRequests';
+			pushTopic.Query = 'SELECT Id, OpenDrawer__c, PulseStartLED__c, SecondsToMoveTape__c, Completed__c FROM Machine_Request__c where Completed__c = false';
+			pushTopic.ApiVersion = 33.0;
+			pushTopic.Description = 'Created or updated MachineRequests without Completed flag set';
+			pushTopic.NotifyForOperationCreate = true;
+			pushTopic.NotifyForOperationUpdate = true;
+			pushTopic.NotifyForOperationUndelete = false;
+			pushTopic.NotifyForOperationDelete = false;
+			pushTopic.NotifyForFields = 'Referenced';
+			insert pushTopic;
+		
+		}
 	}
 
 	public class Events{
 		public Boolean RefreshChatter {get; set;}
-		public Boolean CurrentQuestionAnswered {get; set;}
-		public Boolean AllQuestionsAnswered {get; set;}
+		public Boolean CurrentQuestAnswered {get; set;}
+		public Boolean AllQuestsAnswered {get; set;}
 		public List<AudioEvent> CorrectAnswerAudio {get; set;}
 		public List<AudioEvent> AudioEvents {get; set;}
 
 		public Events(){
 			RefreshChatter = false;
-			CurrentQuestionAnswered = false;
-			AllQuestionsAnswered = false;
+			CurrentQuestAnswered = false;
+			AllQuestsAnswered = false;
 			AudioEvents = new List<AudioEvent>();
 			CorrectAnswerAudio = new List<AudioEvent>();
 		}

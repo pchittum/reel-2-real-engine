@@ -6,7 +6,6 @@
     <fields>
         <fullName>Attempts__c</fullName>
         <defaultValue>0</defaultValue>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Attempts</label>
         <precision>18</precision>
@@ -19,7 +18,6 @@
     <fields>
         <fullName>Class_Name__c</fullName>
         <caseSensitive>false</caseSensitive>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Class Name</label>
         <length>255</length>
@@ -31,15 +29,13 @@
     <fields>
         <fullName>Completed__c</fullName>
         <defaultValue>false</defaultValue>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Completed</label>
         <trackTrending>false</trackTrending>
         <type>Checkbox</type>
     </fields>
     <fields>
-        <fullName>Current_Question__c</fullName>
-        <deprecated>false</deprecated>
+        <fullName>Current_Quest__c</fullName>
         <externalId>false</externalId>
         <label>Current Question</label>
         <length>255</length>
@@ -51,15 +47,21 @@
     <fields>
         <fullName>In_Play__c</fullName>
         <defaultValue>false</defaultValue>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>In Play</label>
         <trackTrending>false</trackTrending>
         <type>Checkbox</type>
     </fields>
     <fields>
+        <fullName>Is_File_Based__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Is File Based</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
         <fullName>Last_Started__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Last Started</label>
         <required>false</required>
@@ -69,7 +71,6 @@
     <fields>
         <fullName>Time_Spent__c</fullName>
         <defaultValue>0</defaultValue>
-        <deprecated>false</deprecated>
         <description>In seconds</description>
         <externalId>false</externalId>
         <label>Time Spent</label>
@@ -83,11 +84,10 @@
     <fields>
         <fullName>Update_Chatter__c</fullName>
         <defaultValue>false</defaultValue>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Update Chatter</label>
         <trackTrending>false</trackTrending>
         <type>Checkbox</type>
     </fields>
-    <label>Level</label>
+    <label>Adventure</label>
 </CustomObject>

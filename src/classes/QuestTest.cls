@@ -1,8 +1,8 @@
 @isTest
-public class QuestionTest implements IQuestion, IQuestionV3{
+public class QuestTest implements IQuest{
 
 	public String getFullyQualifiedClass(){
-		return 'QuestionTest';
+		return 'QuestTest';
 	}
 
 	public Integer getLoadTime(){
@@ -21,23 +21,22 @@ public class QuestionTest implements IQuestion, IQuestionV3{
 		return new List<ChatterEvent>();
 	}
 
-	public IQuestion getNextQuestion(){
-		return null;// new QuestionExample();
+	public IQuest getNextQuest(){
+		return null;
 	}
 
 	public String getLoadingText(){
 		return 'That\'s great. We\'re just loading the next one';
 	}
 
-	public ChatterEvent readPlayersChatterComment(FeedComment chatterComment, String questionId){
+	public ChatterEvent readPlayersChatterComment(FeedComment chatterComment, String questId){
 
 		ChatterEvent ret;
 
 		if(chatterComment.CommentBody.Trim() == 'right'){
 			ret = new ChatterEvent(new FeedComment());
 			ret.PostComment.CommentBody = 'allgood';
-			system.debug('hello');
-			Beacon.markQuestionAnswered(this);
+			Beacon.markQuestAnswered(this);
 		}else{
 			ret = wrongAnswer();
 		}
@@ -51,7 +50,7 @@ public class QuestionTest implements IQuestion, IQuestionV3{
 	public ChatterEvent getFirstPost(){
 
 		ChatterEvent ce = new ChatterEvent(new FeedItem());
-		ce.PostDetails.Body = 'The second question';
+		ce.PostDetails.Body = 'The second quest';
 
 		return ce;
 	}

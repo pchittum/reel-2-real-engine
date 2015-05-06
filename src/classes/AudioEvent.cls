@@ -2,17 +2,6 @@ global class AudioEvent{
 
 	global AudioEvent(){}
 
-	global AudioEvent(Id staticResourceId, Integer start){
-		updateUrlFromId(staticResourceId);
-		this.Start = Start;
-	}
-
-	global AudioEvent(Id staticResourceId, Integer start, Integer channel){
-		updateUrlFromId(staticResourceId);
-		this.Start = Start;
-		this.Channel = channel;	
-	}
-
 	global AudioEvent(String url, Integer start){
 		this.ResourceUrl = url;
 		this.Start = Start;
@@ -60,14 +49,5 @@ global class AudioEvent{
 
 	global String ResourceUrl{get; set;}
 
-	global void updateUrlFromId(Id staticResourceId){
-		
-		List<StaticResource> resources = [SELECT Name, ContentType, NamespacePrefix, SystemModstamp FROM StaticResource WHERE Id = :staticResourceId];
-		if(resources.isEmpty())
-			this.ResourceUrl = null;
-		else
-			this.ResourceUrl = '/resource/' + resources[0].SystemModstamp.getTime() + '/' + (resources[0].NamespacePrefix == null ? '' : resources[0].NamespacePrefix + '__') + resources[0].Name;
-
-	}
 
 }

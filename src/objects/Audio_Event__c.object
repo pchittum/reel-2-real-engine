@@ -5,7 +5,6 @@
     <enableFeeds>false</enableFeeds>
     <fields>
         <fullName>Channel__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Channel</label>
         <precision>18</precision>
@@ -17,7 +16,6 @@
     </fields>
     <fields>
         <fullName>ResourceUrl__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>ResourceUrl</label>
         <required>false</required>
@@ -25,19 +23,7 @@
         <type>Url</type>
     </fields>
     <fields>
-        <fullName>Resource_Id__c</fullName>
-        <deprecated>false</deprecated>
-        <externalId>false</externalId>
-        <label>Resource Id</label>
-        <length>18</length>
-        <required>false</required>
-        <trackTrending>false</trackTrending>
-        <type>Text</type>
-        <unique>false</unique>
-    </fields>
-    <fields>
         <fullName>Volume_Percentage__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Volume Percentage</label>
         <precision>18</precision>
