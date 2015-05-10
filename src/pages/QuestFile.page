@@ -1,0 +1,3 @@
+<apex:page showHeader="false" sidebar="false" cache="false" controller="CreateAdventureController">
+	{!questDownloadString}
+</apex:page>

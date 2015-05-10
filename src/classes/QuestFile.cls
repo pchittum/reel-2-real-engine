@@ -13,6 +13,7 @@ public class QuestFile {
 		public String Answer {get; set;}
 		public String Response {get; set;}
 		public List<String> CorrectAudio {get; set;}
+		public String AudioStrings {get; set;}
 	}
 
 }
