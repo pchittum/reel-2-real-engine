@@ -1,0 +1,35 @@
+<apex:page showHeader="true" sidebar="true" controller="CreateAdventureController">
+	<apex:sectionHeader title="Aventure" subtitle="New Adventure" />
+	<apex:form >
+		<apex:pageBlock title="Adventure Details">
+			<apex:pageBlockSection title="Adventure Overview">
+				<apex:outputText label="Name" value="{!adventure.AdventureName}" />
+				<apex:outputText label="Description" value="{!adventure.Description}" />
+				<apex:outputText label="Duration" value="{!adventure.AllowedDuration}" />
+				<apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+				<apex:commandLink value="Download Adventure File" action="{!downloadAdventureFile}" target="_blank" />
+			</apex:pageBlockSection>
+			<apex:variable value="{!0}" var="questNum" />
+			<apex:repeat value="{!quests}" var="quest">
+				<apex:pageBlockSection title="{!quest.FileName}" >
+					<apex:outputText label="Load Time" value="{!quest.LoadTime}" />
+					<apex:outputText label="Play Time" value="{!quest.PlayTime}" />
+					<apex:outputText label="Loading Text" value="{!quest.LoadingText}" />
+					<apex:outputText label="Question" value="{!quest.Question}" />
+					<apex:repeat value="{!quest.Answers}" var="answer" >
+					<apex:pageBlockSection title="Answer" >
+						<apex:outputText label="Answer" value="{!answer.Answer}" />
+						<apex:outputText label="Response" value="{!answer.Response}" />
+						<apex:outputText label="Audio" value="{!answer.CorrectAudio}" />
+					</apex:pageBlockSection>
+					</apex:repeat>
+					<apex:commandLink value="Download Quest File" action="{!downloadQuestFile}" target="_blank">
+						<apex:param name="downloadNum" value="{!FLOOR(questNum)}"
+	                assignTo="{!downloadNum}"/>
+					</apex:commandLink>
+				</apex:pageBlockSection>
+				<apex:variable value="{!questNum + 1}" var="questNum" />
+			</apex:repeat>
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

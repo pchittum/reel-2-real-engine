@@ -1,0 +1,16 @@
+<apex:page showHeader="true" sidebar="true" controller="CreateAdventureController">
+	<apex:sectionHeader title="Adventure" subtitle="Create New Adventure" />
+	<apex:form >
+		<apex:pageBlock title="Adventure Definition">
+			<apex:pageBlockButtons location="bottom">
+				<apex:commandButton value="Define First Quest" action="{!firstQuest}" />
+			</apex:pageBlockButtons>
+			<apex:pageBlockSection >
+				<apex:inputText label="Name" value="{!adventure.AdventureName}" />
+				<apex:inputTextarea label="Description" value="{!adventure.Description}" />
+				<apex:inputText label="Duration" value="{!adventure.AllowedDuration}" />
+			</apex:pageBlockSection>
+			
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

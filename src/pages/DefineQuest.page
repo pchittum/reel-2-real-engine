@@ -1,0 +1,34 @@
+<apex:page showHeader="true" sidebar="true" controller="CreateAdventureController">
+	<apex:sectionHeader title="Quest" subtitle="Define Quest Details" />
+	<apex:form >
+		<apex:pageBlock title="Quest Definition">
+			<apex:pageBlockButtons location="bottom">
+				<apex:commandButton value="Add New Quest" action="{!newQuest}" />
+				<apex:commandButton value="Finish" action="{!finish}" />
+			</apex:pageBlockButtons>
+			<apex:pageBlockSection title="Quest Details">
+				<apex:inputText label="Name" value="{!quests[questNumber].FileName}" />
+				<apex:inputText label="Load Time" value="{!quests[questNumber].LoadTime}" />
+				<apex:inputText label="Play Time" value="{!quests[questNumber].PlayTime}" />
+				<apex:inputTextarea label="Loading Text" value="{!quests[questNumber].LoadingText}" />
+				<apex:inputTextarea label="Question" value="{!quests[questNumber].Question}" />
+			</apex:pageBlockSection>
+		</apex:pageBlock>
+		<apex:pageBlock title="Answers">
+			<apex:pageBlockButtons location="top">
+				<apex:commandButton value="Add New Answer" action="{!addAnswer}" reRender="answerPanel"/>
+			</apex:pageBlockButtons>
+			<apex:outputPanel id="answerPanel" >
+				<apex:variable value="{!0}" var="answerNum"/>
+				<apex:repeat value="{!quests[questNumber].Answers}" var="answer" id="answers">
+					<apex:pageBlockSection columns="3">
+						<apex:inputTextarea label="Answer" value="{!answer.Answer}" />
+						<apex:inputTextarea label="Response" value="{!answer.Response}" />
+						<apex:inputTextarea label="Audio Links (comma separated)" value="{!answer.AudioStrings}" />
+					</apex:pageBlockSection>
+				</apex:repeat>
+			</apex:outputPanel>
+		</apex:pageBlock>
+	</apex:form>
+    
+</apex:page>
