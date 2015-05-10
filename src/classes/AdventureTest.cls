@@ -1,9 +1,10 @@
-public class LevelExample implements ILevel, ILevelv2{
+@isTest
+public class AdventureTest implements IAdventure{
 
-	private static final String CURRENTQUESTION = 'Current Question';
+	private static final String CURRENTQUEST = 'Current Quest';
 
 	public String getName(){
-		return 'Example Level';
+		return 'Example Adventure';
 	}
 
 	public String getDescription(){
@@ -19,7 +20,7 @@ public class LevelExample implements ILevel, ILevelv2{
 	}
 
 	public String getFullyQualifiedClass(){
-		return 'LevelExample';
+		return 'AdventureTest';
 	}
 
 	public Id getSoundTrackId(){
@@ -27,12 +28,13 @@ public class LevelExample implements ILevel, ILevelv2{
 	}
 
 	public String getSoundTrackUrl(){
-		return 'https://youtu.be/Isid4LLy9g0';
+		return 'http://bob.com/sdsd';
 	}
 
 	public List<AudioEvent> getAudioEvents(){
 
 		List<AudioEvent> ret = new List<AudioEvent>();
+		ret.add(new AudioEvent('https://www.dropbox.com/s/nmcgtoj8nl5frxb/cust_s02.mp3?dl=1', 1, 0));
 
 		return ret;
 	}
@@ -44,7 +46,7 @@ public class LevelExample implements ILevel, ILevelv2{
 		return ret;
 	}
 
-	public ChatterEvent readPlayersChatterComment(FeedComment chatterComment, String questionId){
+	public ChatterEvent readPlayersChatterComment(FeedComment chatterComment, String questId){
 
 		ChatterEvent ret;
 
@@ -57,8 +59,16 @@ public class LevelExample implements ILevel, ILevelv2{
 		return ret;
 	}
 
-	public IQuestion getFirstQuestion(){
-		return new QuestionExample();
+	public IQuest getFirstQuest(){
+		return new QuestTest();
+	}
+
+	public Boolean isFileBased(){
+		return false;
+	}
+
+	public String firstFileName(){
+		return null;
 	}
 
 	private ChatterEvent wrongAnswer(){
@@ -79,12 +89,6 @@ public class LevelExample implements ILevel, ILevelv2{
 
 	}
 
-	public Boolean isFileBased(){
-		return true;
-	}
 
-	public String firstFileName(){
-		return 'Question1';
-	}
 
 }

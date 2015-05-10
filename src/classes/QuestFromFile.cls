@@ -1,14 +1,14 @@
-global class QuestionFromFile implements IQuestion, IQuestionV3{
+global class QuestFromFile implements IQuest{
 
-	private QuestionFile theFile;
+	private QuestFile theFile;
 
-	global QuestionFromFile(){}
+	global QuestFromFile(){}
 
-	public QuestionFromFile(QuestionFile theFile){
+	public QuestFromFile(QuestFile theFile){
 		this.theFile = theFile;
 	}
 
-	global QuestionFromFile(String fileName){
+	global QuestFromFile(String fileName){
 
 		List<StaticResource> res = [SELECT Body FROM StaticResource WHERE Name = :filename];
 
@@ -16,7 +16,7 @@ global class QuestionFromFile implements IQuestion, IQuestionV3{
 			throw new ChannelException('No matching files');
 
 		try{
-			theFile = (QuestionFile)JSON.deserialize(res[0].Body.toString(), QuestionFile.class);
+			theFile = (QuestFile)JSON.deserialize(res[0].Body.toString(), QuestFile.class);
 		}catch(Exception ex){
 			throw new ChannelException('Read error', ex);			
 		}
@@ -43,10 +43,10 @@ global class QuestionFromFile implements IQuestion, IQuestionV3{
 		return new List<ChatterEvent>();
 	}
 
-	public IQuestion getNextQuestion(){
+	public IQuest getNextQuest(){
 
-		if(!String.isBlank(theFile.nextQuestion))
-			return new QuestionFromFile(theFile.nextQuestion);
+		if(!String.isBlank(theFile.nextQuest))
+			return new QuestFromFile(theFile.nextQuest);
 		else
 			return null;
 	}
@@ -55,7 +55,7 @@ global class QuestionFromFile implements IQuestion, IQuestionV3{
 		return theFile.loadingText;
 	}
 
-	public ChatterEvent readPlayersChatterComment(FeedComment chatterComment, String questionId){
+	public ChatterEvent readPlayersChatterComment(FeedComment chatterComment, String questId){
 
 		ChatterEvent ret;
 
@@ -63,12 +63,12 @@ global class QuestionFromFile implements IQuestion, IQuestionV3{
 		Boolean correct = false;
 		Integer idx = 0;
 
-		for(QuestionFile.Answer ans : theFile.answers){
+		for(QuestFile.Answer ans : theFile.answers){
 			if(input == ans.answer){
 				ret = new ChatterEvent(new FeedComment());
 				ret.PostComment.CommentBody = ans.response;
 				Beacon.saveSetting(theFile.filename + ';audio', String.valueOf(idx));
-				Beacon.markQuestionAnswered(this);
+				Beacon.markQuestAnswered(this);
 				correct = true;
 				break;
 			}
@@ -111,8 +111,6 @@ global class QuestionFromFile implements IQuestion, IQuestionV3{
 
 	}
 
-
-
 	public List<AudioEvent> getCorrectAnswerAudioClips(){
 		
 		List<AudioEvent> ret = new List<AudioEvent>();
@@ -126,10 +124,6 @@ global class QuestionFromFile implements IQuestion, IQuestionV3{
 				ret.add(new AudioEvent(url, 0, 0));
 			}
 		}
-
-//		ret.add(new AudioEvent('https://www.dropbox.com/s/nmcgtoj8nl5frxb/cust_s02.mp3?dl=1', 0, 0));
-//		ret.add(new AudioEvent('https://www.dropbox.com/s/miiexyxgtr0enwr/cust_s03.mp3?dl=1', 0, 0));
-//		ret.add(new AudioEvent('https://www.dropbox.com/s/778etqst3w7xzhr/cust_s04.mp3?dl=1', 0, 0));
 
 		return ret;
 	}

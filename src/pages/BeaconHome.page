@@ -13,7 +13,7 @@
 			lastOtherCheck : null
 		};
 
-		beacon.question = {
+		beacon.quest = {
 			startDuration : 0,
 			playDuration : 0
 		};
@@ -24,7 +24,7 @@
 
 		beacon.playTimer = function(){
 
-			if(beacon.question.playDuration == 0){
+			if(beacon.quest.playDuration == 0){
 
 				// Need to do something here to go to credits
 				console.log('BANG -play');
@@ -34,17 +34,17 @@
 				clearTimeout(beacon.pTimer);
 			}
 
-			var diffMinutes = Math.floor(beacon.question.playDuration / 60);
-			var diffSecs = Math.floor(beacon.question.playDuration - (diffMinutes * 60));
+			var diffMinutes = Math.floor(beacon.quest.playDuration / 60);
+			var diffSecs = Math.floor(beacon.quest.playDuration - (diffMinutes * 60));
 
 			$('#playTimer').html('You have <h1>' + paddy(diffMinutes, 2) + ':' + paddy(diffSecs, 2) + '</h1> of tape left.');
 
-			beacon.question.playDuration--;
+			beacon.quest.playDuration--;
 		};
 
 		beacon.startTimer = function(){
 
-			if(beacon.question.startDuration == 0){
+			if(beacon.quest.startDuration == 0){
 
 				// Need to do something here to go to credits
 				console.log('BANG -start');
@@ -54,12 +54,12 @@
 				clearTimeout(beacon.sTimer);
 			}
 
-			var diffMinutes = Math.floor(beacon.question.startDuration / 60);
-			var diffSecs = Math.floor(beacon.question.startDuration - (diffMinutes * 60));
+			var diffMinutes = Math.floor(beacon.quest.startDuration / 60);
+			var diffSecs = Math.floor(beacon.quest.startDuration - (diffMinutes * 60));
 
 			$('#startTimer').html('You have <h1>' + paddy(diffMinutes, 2) + ':' + paddy(diffSecs, 2) + '</h1> before the tape is dequeued.');
 
-			beacon.question.startDuration--;
+			beacon.quest.startDuration--;
 
 		};
 
@@ -69,13 +69,11 @@
 
 			if(beacon.updates.lastOtherCheck === null){
 				beacon.updates.lastOtherCheck = curPos;
-				console.log('a ' + beacon.events);
-				//beacon.events =setTimeout(beacon.runEvents, 2000);
 			}else{
 
 				 Visualforce.remoting.Manager.invokeAction(
             		'{!$RemoteAction.BeaconHomeController.runEvents}',
-					beacon.levelName, 
+					beacon.adventureName, 
 					beacon.updates.lastOtherCheck, 
 					curPos, 
 					0, 
@@ -134,7 +132,7 @@
 
 				$('#channelDialogue0').attr('src', result.CorrectAnswerAudio[0].ResourceUrl);
 				$('#channelDialogue0').attr('volume', result.CorrectAnswerAudio[0].VolumePercentage);
-				$('#channelDialogue0').on('ended', function(){onDialogueEnded(result.AllQuestionsAnswered, 0);});
+				$('#channelDialogue0').on('ended', function(){onDialogueEnded(result.AllQuestsAnswered, 0);});
 				$('#channelDialogue0').on('canplay', pauseAllChannelsAndPlayDialogue);
 
 				for(var i=1; i<result.CorrectAnswerAudio.length; i++){
@@ -142,7 +140,7 @@
 
 					$('#channelDialogue' + i).attr('src', result.CorrectAnswerAudio[i].ResourceUrl);
 					$('#channelDialogue' + i).attr('volume', result.CorrectAnswerAudio[i].VolumePercentage);
-					$('#channelDialogue' + i).on('ended', function(){onDialogueEnded(result.AllQuestionsAnswered, i);});
+					$('#channelDialogue' + i).on('ended', function(){onDialogueEnded(result.AllQuestsAnswered, i);});
 				}
 
 				for(var i=result.CorrectAnswerAudio.length; i < 5; i++){
@@ -154,7 +152,6 @@
 
 				if(result.RefreshChatter){
 					chatter.getFeed().showNewUpdates();
-					//refreshPage();
 				}
 
 				return;
@@ -168,7 +165,7 @@
 				$('#channel' + result[i].AudioEvents.Channel).attr('volume', result[i].AudioEvents.VolumePercentage);
 			}
 
-			if(result.AllQuestionsAnswered){
+			if(result.AllQuestsAnswered){
 				allCompleted();
 				return;
 			}
@@ -178,7 +175,7 @@
 				//refreshPage();
 			}
 
-			if(result.CurrentQuestionAnswered){
+			if(result.CurrentQuestAnswered){
 				refreshPage();
 			}
 
@@ -199,11 +196,6 @@
 
 	<apex:form id="everything">
 
-
-		<apex:outputPanel rendered="{!soundTrackSource != null}">
-			<audio id="channelSoundTrack" loop="true" src="https://www.dropbox.com/s/k6sbzczk0vj9in0/pause_welcome_samb_01.mp3?dl=1" autoplay="true" />
-		</apex:outputPanel>
-
 		<audio id="channel0"/>
 		<audio id="channelDialogue0" />
 		<audio id="channelDialogue1" />
@@ -211,34 +203,34 @@
 		<audio id="channelDialogue3" />
 		<audio id="channelDialogue4" />
 		
-		<apex:actionFunction action="{!refresh}" name="refreshPage"  reRender="levels, inLevel ,endLevel, refreshJs, feed"/>
-		<apex:actionFunction action="{!allCompleted}" name="allCompleted"  reRender="levels, inLevel ,endLevel, refreshJs, feed"/>
-		<apex:actionFunction action="{!playTimerExpired}" name="playTimerExpired"  reRender="levels, inLevel ,endLevel, refreshJs, feed"/>
-		<apex:actionFunction action="{!startTimerExpired}" name="startTimerExpired"  reRender="levels, inLevel ,endLevel, refreshJs, feed"/>
+		<apex:actionFunction action="{!refresh}" name="refreshPage"  reRender="adventures, inadventure ,endadventure, refreshJs, feed"/>
+		<apex:actionFunction action="{!allCompleted}" name="allCompleted"  reRender="adventures, inadventure ,endadventure, refreshJs, feed"/>
+		<apex:actionFunction action="{!playTimerExpired}" name="playTimerExpired"  reRender="adventures, inadventure ,endadventure, refreshJs, feed"/>
+		<apex:actionFunction action="{!startTimerExpired}" name="startTimerExpired"  reRender="adventures, inadventure ,endadventure, refreshJs, feed"/>
 
-		<apex:outputPanel id="levels">
+		<apex:outputPanel id="adventures">
 
-			<apex:outputPanel id="p1" rendered="{!pageStatus == 'LEVELS'}">
-				<h1>Beacon testing</h1><br/><br/>
+			<apex:outputPanel id="p1" rendered="{!pageStatus == 'ADVENTURES'}">
+				<h1>Simulation</h1><br/><br/>
 
-				<apex:dataTable value="{!levels}" var="level" cellpadding="5px">
-					<apex:column value="{!level.levelDetails.Name}" headerValue="Level Name" />
-					<apex:column value="{!level.levelDetails.Description}" headerValue="Synopsis" />
+				<apex:dataTable value="{!adventures}" var="adventure" cellpadding="5px">
+					<apex:column value="{!adventure.adventureDetails.Name}" headerValue="adventure Name" />
+					<apex:column value="{!adventure.adventureDetails.Description}" headerValue="Synopsis" />
 
-					<apex:column value="{!level.levelSettings.Completed__c}" headerValue="Completed" />
-					<apex:column value="{!level.levelSettings.Attempts__c}" headerValue="Attempts" />
+					<apex:column value="{!adventure.adventureSettings.Completed__c}" headerValue="Completed" />
+					<apex:column value="{!adventure.adventureSettings.Attempts__c}" headerValue="Attempts" />
 
 					<apex:column >
-						<apex:commandLink value="Start" action="{!StartLevel}" rendered="{!ISNULL(InPlayName)}" reRender="levels, inLevel ,endLevel, refreshJs, feed">
-							<apex:param name="currentLevel" assignTo="{!currentLevelName}" value="{!level.levelSettings.Name}"/>
+						<apex:commandLink value="Start" action="{!Startadventure}" rendered="{!ISNULL(InPlayName)}" reRender="adventures, inadventure ,endadventure, refreshJs, feed">
+							<apex:param name="currentadventure" assignTo="{!currentadventureName}" value="{!adventure.adventureSettings.Name}"/>
 						</apex:commandLink>
-						<apex:commandLink value="Continue" action="{!StartLevel}" reRender="levels, inLevel ,endLevel, refreshJs, feed" rendered="{!InPlayName == level.levelSettings.Name}">
-							<apex:param name="currentLevel" assignTo="{!currentLevelName}" value="{!level.levelSettings.Name}"/>
+						<apex:commandLink value="Continue" action="{!Startadventure}" reRender="adventures, inadventure ,endadventure, refreshJs, feed" rendered="{!InPlayName == adventure.adventureSettings.Name}">
+							<apex:param name="currentadventure" assignTo="{!currentadventureName}" value="{!adventure.adventureSettings.Name}"/>
 						</apex:commandLink>
 					</apex:column>
 					<apex:column >
-						<apex:commandLink value="Reset (for testing)" action="{!reset}" reRender="levels, inLevel ,endLevel, refreshJs">
-							<apex:param name="currentLevel" assignTo="{!currentLevelName}" value="{!level.levelSettings.Name}"/>
+						<apex:commandLink value="Reset (for testing)" action="{!reset}" reRender="adventures, inadventure ,endadventure, refreshJs">
+							<apex:param name="currentadventure" assignTo="{!currentadventureName}" value="{!adventure.adventureSettings.Name}"/>
 						</apex:commandLink>
 					</apex:column>
 
@@ -247,43 +239,43 @@
 			</apex:outputPanel>
 		</apex:outputPanel>
 
-		<apex:outputPanel id="inLevel">
+		<apex:outputPanel id="inadventure">
 
 			<apex:outputPanel layout="block" id="cassette">
 				<apex:image url="{!$Resource.cassette}" width="500" />
 			</apex:outputPanel>
 
-			<apex:outputPanel rendered="{!pageStatus == 'INLEVEL'}">
+			<apex:outputPanel rendered="{!pageStatus == 'INADVENTURE'}">
 				<!-- Put the game play stuff in here -->
 
 				<script>
 					beacon.events = setTimeout(beacon.runEvents, 0);
-					beacon.question.playDuration = {!currentLevel.currentQuestion.PlayTime};
+					beacon.quest.playDuration = {!currentadventure.currentQuest.PlayTime};
 				</script>
 
 	  
-				<apex:outputPanel rendered="{!currentLevel.QuestionStarted != true}" id="startPanel">
+				<apex:outputPanel rendered="{!currentadventure.QuestStarted != true}" id="startPanel">
 
 					<script>
 						$('.feed').hide();
-						beacon.question.startDuration = {!currentLevel.currentQuestion.LoadTime};
+						beacon.quest.startDuration = {!currentadventure.currentQuest.LoadTime};
 						beacon.sTimer = setInterval(beacon.startTimer, 1000);
 					</script>
 
 
 					<!-- We're loading the tape -->
-					<p>{!currentLevel.currentQuestion.LoadingText}</p>
+					<p>{!currentadventure.currentQuest.LoadingText}</p>
 					<p>It's loaded and in the queue</p>
 					<p id="startTimer"></p>
 
-					<apex:commandLink onclick="clearTimeout(beacon.sTimer);" action="{!startQuestion}" value="Start" reRender="levels, inLevel ,endLevel, refreshJs, feed, thefeed"/>
+					<apex:commandLink onclick="clearTimeout(beacon.sTimer);" action="{!startQuest}" value="Start" reRender="adventures, inadventure ,endadventure, refreshJs, feed, thefeed"/>
 
 				</apex:outputPanel>
 
 
-				<apex:outputPanel rendered="{!currentLevel.QuestionStarted == true}" id="playPanel">
+				<apex:outputPanel rendered="{!currentadventure.QuestStarted == true}" id="playPanel">
 
-					<!-- This is the question side of it -->
+					<!-- This is the quest side of it -->
 					<p id="playTimer"></p>
 				
 					<script>
@@ -297,10 +289,10 @@
 
 		</apex:outputPanel>
 
-		<apex:outputPanel id="endLevel">
+		<apex:outputPanel id="endadventure">
 
-			<apex:outputPanel rendered="{!pageStatus == 'LEVELEND'}">
-				<!-- End of level summary etc -->
+			<apex:outputPanel rendered="{!pageStatus == 'adventureEND'}">
+				<!-- End of adventure summary etc -->
 				<script>
 					$('.feed').hide();
 					$('div[id$="cassette"]').hide();
@@ -311,7 +303,7 @@
 						<table style="color:white; font-size:20px; padding:100px 0px;">
 							<tr>
 								<td colspan="2" style="text-align:center; color:white; padding-top:15px;padding-bottom:10px;">
-									Based on a novel by
+									Created by
 								</td>
 							</tr>
 							<tr>
@@ -409,7 +401,7 @@
 							</tr>
 							<tr>
 								<td colspan="2" style="text-align:center; color:white;">
-									Lorraine Sheridan
+									Nanna Gunnars
 								</td>
 							</tr>
 							<tr>
@@ -438,7 +430,7 @@
 		<apex:outputPanel id="refreshJs">
 			<script>
 				var beacon = beacon || {};
-				beacon.levelName = '{!currentLevelName}';
+				beacon.adventureName = '{!currentadventureName}';
 
 			</script>
 		</apex:outputPanel>
