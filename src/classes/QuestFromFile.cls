@@ -97,24 +97,6 @@ global class QuestFromFile implements IQuest{
 		return ce;
 	}
 
-	private ChatterEvent wrongAnswerOld(){
-
-		ChatterEvent ret = new ChatterEvent(new FeedComment());
-
-		Integer rand = Integer.valueOf(Math.ceil(Math.random() * 2));
-
-		if(rand == 1){
-			ret.PostComment.CommentBody = 'Are you sure about that?';
-		}else if(rand == 2){
-			ret.PostComment.CommentBody = 'With answers like that you should just walk away from the computer, try again.';
-		}else{
-			ret.PostComment.CommentBody = 'I\'m sorry, I don\'t understand that.';
-		}
-
-		return ret;
-
-	}
-
 	private ChatterEvent wrongAnswer(){
 
 		ChatterEvent ret = new ChatterEvent(new FeedComment());
