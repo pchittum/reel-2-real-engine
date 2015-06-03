@@ -1,12 +1,17 @@
-<apex:page docType="HTML-5.0" showHeader="false" sidebar="false" controller="BeaconHomeController">
+<apex:page docType="HTML-5.0" showHeader="false" sidebar="false" controller="BeaconHomeController" action="{!StartAdventure}">
 
 	<apex:includeScript value="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js" />
 	<apex:includeScript value="/canvas/sdk/js/29.0/publisher.js"/>
 	<script type="text/javascript">
 
+		$(document).ready(function(){
+			$('#channelSoundTrack').attr('src', beacon.soundTracks[0]);
+			$('#channelSoundTrack').trigger('play');
+		});
+
 		var beacon = beacon || {};
 
-		window.resizeTo(550, window.innerHeight);
+		window.resizeTo(500, window.innerHeight);
 
 		beacon.updates = {
 			lastAudioCheck : null,
@@ -34,10 +39,10 @@
 				clearTimeout(beacon.pTimer);
 			}
 
-			var diffMinutes = Math.floor(beacon.quest.playDuration / 60);
-			var diffSecs = Math.floor(beacon.quest.playDuration - (diffMinutes * 60));
+			//var diffMinutes = Math.floor(beacon.quest.playDuration / 60);
+			//var diffSecs = Math.floor(beacon.quest.playDuration - (diffMinutes * 60));
 
-			$('#playTimer').html('You have <h1>' + paddy(diffMinutes, 2) + ':' + paddy(diffSecs, 2) + '</h1> of tape left.');
+			//$('#playTimer').html('You have <h1>' + paddy(diffMinutes, 2) + ':' + paddy(diffSecs, 2) + '</h1> of tape left.');
 
 			beacon.quest.playDuration--;
 		};
@@ -54,10 +59,10 @@
 				clearTimeout(beacon.sTimer);
 			}
 
-			var diffMinutes = Math.floor(beacon.quest.startDuration / 60);
-			var diffSecs = Math.floor(beacon.quest.startDuration - (diffMinutes * 60));
+			//var diffMinutes = Math.floor(beacon.quest.startDuration / 60);
+			//var diffSecs = Math.floor(beacon.quest.startDuration - (diffMinutes * 60));
 
-			$('#startTimer').html('You have <h1>' + paddy(diffMinutes, 2) + ':' + paddy(diffSecs, 2) + '</h1> before the tape is dequeued.');
+			//$('#startTimer').html('You have <h1>' + paddy(diffMinutes, 2) + ':' + paddy(diffSecs, 2) + '</h1> before the tape is dequeued.');
 
 			beacon.quest.startDuration--;
 
@@ -96,6 +101,11 @@
 
 			if(channelNo < 5 && $('#channelDialogue' + channelNo).data('hasnext') == true){
 				$('#channelDialogue' + (channelNo + 1)).trigger('play');
+				 Visualforce.remoting.Manager.invokeAction(
+            		'{!$RemoteAction.BeaconHomeController.moveTape}',
+            		$('#channelDialogue' + (channelNo + 1)).duration,
+            		function(){});
+
 				return;
 			}
 
@@ -118,12 +128,21 @@
 
 		function playDialogue(){
 			$('#channelDialogue0').trigger('play');
+			 Visualforce.remoting.Manager.invokeAction(
+        		'{!$RemoteAction.BeaconHomeController.moveTape}',
+        		$('#channelDialogue0').duration,
+        		function(){});
+
 			window.scrollTo(0, 0);
 			$('div[id$="cassette"]').hide();
 			$('#overlay').css('display', 'table');
 		};
 
 		function runEventsResult(result, event){
+
+			if(result.CorrectImage != null && result.CorrectImage != ''){
+				$('#playingImage').attr('src', result.CorrectImage);
+			}
 
 			if(result.CorrectAnswerAudio.length > 0){
 
@@ -189,7 +208,7 @@
 	<div id="overlay" style="height:100%; width:100%; z-index:10000; display:none; position:absolute; opacity: 0.8; background-color:white;">
 		<div style="display: table-cell;vertical-align: middle;">
 			<div style="width: 500px; margin-left: auto; margin-right: auto">
-				<apex:image url="{!$Resource.cassette}" width="500" />
+				<img id="playingImage" src="" style="width:500px;" />
 			</div>
 		</div>
 	</div>
@@ -197,6 +216,7 @@
 	<apex:form id="everything">
 
 		<audio id="channel0"/>
+		<audio id="channelSoundTrack" />
 		<audio id="channelDialogue0" />
 		<audio id="channelDialogue1" />
 		<audio id="channelDialogue2" />
@@ -208,6 +228,7 @@
 		<apex:actionFunction action="{!playTimerExpired}" name="playTimerExpired"  reRender="adventures, inadventure ,endadventure, refreshJs, feed"/>
 		<apex:actionFunction action="{!startTimerExpired}" name="startTimerExpired"  reRender="adventures, inadventure ,endadventure, refreshJs, feed"/>
 
+		<!--
 		<apex:outputPanel id="adventures">
 
 			<apex:outputPanel id="p1" rendered="{!pageStatus == 'ADVENTURES'}">
@@ -239,10 +260,12 @@
 			</apex:outputPanel>
 		</apex:outputPanel>
 
+		-->
+
 		<apex:outputPanel id="inadventure">
 
 			<apex:outputPanel layout="block" id="cassette">
-				<apex:image url="{!$Resource.cassette}" width="500" />
+				<apex:image url="{!$Resource.pause}" width="500" />
 			</apex:outputPanel>
 
 			<apex:outputPanel rendered="{!pageStatus == 'INADVENTURE'}">
@@ -259,7 +282,7 @@
 					<script>
 						$('.feed').hide();
 						beacon.quest.startDuration = {!currentadventure.currentQuest.LoadTime};
-						beacon.sTimer = setInterval(beacon.startTimer, 1000);
+						//beacon.sTimer = setInterval(beacon.startTimer, 1000);
 					</script>
 
 
@@ -280,7 +303,7 @@
 				
 					<script>
 						$('.feed').show();
-						beacon.pTimer = setInterval(beacon.playTimer, 1000);
+						//beacon.pTimer = setInterval(beacon.playTimer, 1000);
 					</script>
 
 				</apex:outputPanel>

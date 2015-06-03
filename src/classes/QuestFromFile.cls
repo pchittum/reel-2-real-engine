@@ -39,6 +39,10 @@ global class QuestFromFile implements IQuest{
 		return new List<AudioEvent>();
 	}
 
+	public String getCorrectImageUrl(){
+		return theFile.CorrectImageUrl;
+	}
+
 	public List<ChatterEvent> getChatterEvents(){
 		return new List<ChatterEvent>();
 	}
@@ -93,7 +97,7 @@ global class QuestFromFile implements IQuest{
 		return ce;
 	}
 
-	private ChatterEvent wrongAnswer(){
+	private ChatterEvent wrongAnswerOld(){
 
 		ChatterEvent ret = new ChatterEvent(new FeedComment());
 
@@ -110,6 +114,36 @@ global class QuestFromFile implements IQuest{
 		return ret;
 
 	}
+
+	private ChatterEvent wrongAnswer(){
+
+		ChatterEvent ret = new ChatterEvent(new FeedComment());
+
+		if(theFile.IncorrectResponses == null){
+			ret.PostComment.CommentBody = 'Please try again';
+			return ret;
+		}
+
+
+		String wrongIdx = Beacon.readSetting(theFile.filename + ';wrong_idx');
+		Integer idx = 0;
+
+		if(!String.isBlank(wrongIdx)){
+			idx = Integer.valueOf(wrongidx);
+		}
+
+		if(idx >= theFile.IncorrectResponses.size()){
+			idx = theFile.IncorrectResponses.size() - 1;
+		}
+
+		ret.PostComment.CommentBody = theFile.IncorrectResponses[idx].Response;
+
+		Beacon.saveSetting(theFile.filename + ';wrong_idx', String.valueOf(++idx));
+	
+		return ret;
+
+	}
+
 
 	public List<AudioEvent> getCorrectAnswerAudioClips(){
 		
