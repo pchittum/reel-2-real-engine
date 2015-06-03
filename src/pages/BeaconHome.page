@@ -5,6 +5,7 @@
 	<script type="text/javascript">
 
 		$(document).ready(function(){
+			$('#channelSoundTrack').prop('volume', 0.5);
 			$('#channelSoundTrack').attr('src', beacon.soundTracks[0]);
 			$('#channelSoundTrack').trigger('play');
 		});
@@ -39,11 +40,6 @@
 				clearTimeout(beacon.pTimer);
 			}
 
-			//var diffMinutes = Math.floor(beacon.quest.playDuration / 60);
-			//var diffSecs = Math.floor(beacon.quest.playDuration - (diffMinutes * 60));
-
-			//$('#playTimer').html('You have <h1>' + paddy(diffMinutes, 2) + ':' + paddy(diffSecs, 2) + '</h1> of tape left.');
-
 			beacon.quest.playDuration--;
 		};
 
@@ -58,11 +54,6 @@
 
 				clearTimeout(beacon.sTimer);
 			}
-
-			//var diffMinutes = Math.floor(beacon.quest.startDuration / 60);
-			//var diffSecs = Math.floor(beacon.quest.startDuration - (diffMinutes * 60));
-
-			//$('#startTimer').html('You have <h1>' + paddy(diffMinutes, 2) + ':' + paddy(diffSecs, 2) + '</h1> before the tape is dequeued.');
 
 			beacon.quest.startDuration--;
 
@@ -88,6 +79,31 @@
 			}
 
 		}
+
+		beacon.playChannel = function(channelNumber){
+			$('#channelSoundTrack').attr('src', beacon.soundTracks[channelNumber]);
+			$('#channelSoundTrack').trigger('play');
+		};
+
+		beacon.volumeUp = function(){
+			var vol = parseFloat($('#channelSoundTrack').prop('volume'));
+			vol += 0.05;
+			if(vol > 1){
+				vol = 1;
+			}
+			$('#channelSoundTrack').prop('volume', vol);
+			$('#volPct').html(parseInt(vol * 100) + '%');
+		};
+
+		beacon.volumeDown = function(){
+			var vol = parseFloat($('#channelSoundTrack').prop('volume'));
+			vol -= 0.05;
+			if(vol < 0){
+				vol = 0;
+			}
+			$('#channelSoundTrack').prop('volume', vol);
+			$('#volPct').html(parseInt(vol * 100) + '%');
+		};
 
 		function paddy(n, p, c) {
 		    var pad_char = typeof c !== 'undefined' ? c : '0';
@@ -216,7 +232,7 @@
 	<apex:form id="everything">
 
 		<audio id="channel0"/>
-		<audio id="channelSoundTrack" />
+		<audio id="channelSoundTrack" volume="0.3"/>
 		<audio id="channelDialogue0" />
 		<audio id="channelDialogue1" />
 		<audio id="channelDialogue2" />
@@ -228,45 +244,34 @@
 		<apex:actionFunction action="{!playTimerExpired}" name="playTimerExpired"  reRender="adventures, inadventure ,endadventure, refreshJs, feed"/>
 		<apex:actionFunction action="{!startTimerExpired}" name="startTimerExpired"  reRender="adventures, inadventure ,endadventure, refreshJs, feed"/>
 
-		<!--
-		<apex:outputPanel id="adventures">
-
-			<apex:outputPanel id="p1" rendered="{!pageStatus == 'ADVENTURES'}">
-				<h1>Simulation</h1><br/><br/>
-
-				<apex:dataTable value="{!adventures}" var="adventure" cellpadding="5px">
-					<apex:column value="{!adventure.adventureDetails.Name}" headerValue="adventure Name" />
-					<apex:column value="{!adventure.adventureDetails.Description}" headerValue="Synopsis" />
-
-					<apex:column value="{!adventure.adventureSettings.Completed__c}" headerValue="Completed" />
-					<apex:column value="{!adventure.adventureSettings.Attempts__c}" headerValue="Attempts" />
-
-					<apex:column >
-						<apex:commandLink value="Start" action="{!Startadventure}" rendered="{!ISNULL(InPlayName)}" reRender="adventures, inadventure ,endadventure, refreshJs, feed">
-							<apex:param name="currentadventure" assignTo="{!currentadventureName}" value="{!adventure.adventureSettings.Name}"/>
-						</apex:commandLink>
-						<apex:commandLink value="Continue" action="{!Startadventure}" reRender="adventures, inadventure ,endadventure, refreshJs, feed" rendered="{!InPlayName == adventure.adventureSettings.Name}">
-							<apex:param name="currentadventure" assignTo="{!currentadventureName}" value="{!adventure.adventureSettings.Name}"/>
-						</apex:commandLink>
-					</apex:column>
-					<apex:column >
-						<apex:commandLink value="Reset (for testing)" action="{!reset}" reRender="adventures, inadventure ,endadventure, refreshJs">
-							<apex:param name="currentadventure" assignTo="{!currentadventureName}" value="{!adventure.adventureSettings.Name}"/>
-						</apex:commandLink>
-					</apex:column>
-
-				</apex:dataTable>
-
-			</apex:outputPanel>
-		</apex:outputPanel>
-
-		-->
-
 		<apex:outputPanel id="inadventure">
 
 			<apex:outputPanel layout="block" id="cassette">
 				<apex:image url="{!$Resource.pause}" width="500" />
 			</apex:outputPanel>
+
+			<br/>
+
+			<div>
+				<a href="#" onclick="beacon.playChannel(0);">Station 1</a>&nbsp;&nbsp;
+				<a href="#" onclick="beacon.playChannel(1);">Station 2</a>&nbsp;&nbsp;
+				<a href="#" onclick="beacon.playChannel(2);">Station 3</a>&nbsp;&nbsp;
+				<a href="#" onclick="beacon.playChannel(3);">Station 4</a>&nbsp;&nbsp;
+				<a href="#" onclick="beacon.playChannel(4);">Station 5</a>&nbsp;&nbsp;
+				<a href="#" onclick="beacon.playChannel(5);">Station 6</a>&nbsp;&nbsp;
+				<a href="#" onclick="beacon.playChannel(6);">Station 7</a>&nbsp;&nbsp;
+				<a href="#" onclick="beacon.playChannel(7);">Station 8</a>&nbsp;&nbsp;
+			</div>
+
+			<br/>
+
+			<div>
+				<a href="#" onclick="beacon.volumeDown();">Volume Down</a>&nbsp;
+				<a href="#" onclick="beacon.volumeUp();">Volume Up</a>&nbsp;
+				<span id="volPct">50%</span>
+			</div>
+
+			<br/>
 
 			<apex:outputPanel rendered="{!pageStatus == 'INADVENTURE'}">
 				<!-- Put the game play stuff in here -->
