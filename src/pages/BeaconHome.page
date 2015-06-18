@@ -7,7 +7,7 @@
 		$(document).ready(function(){
 			$('#channelSoundTrack').prop('volume', 0.5);
 			$('#channelSoundTrack').attr('src', beacon.soundTracks[0]);
-			$('#channelSoundTrack').trigger('play');
+			//$('#channelSoundTrack').trigger('play');
 		});
 
 		var beacon = beacon || {};
@@ -160,6 +160,12 @@
 				$('#playingImage').attr('src', result.CorrectImage);
 			}
 
+			if(result.Action == 'playRadio'){
+				$('#channelSoundTrack').trigger('play');
+				chatter.getFeed().showNewUpdates();
+				return;
+			}
+
 			if(result.CorrectAnswerAudio.length > 0){
 
 				clearTimeout(beacon.pTimer);
@@ -243,6 +249,7 @@
 		<apex:actionFunction action="{!allCompleted}" name="allCompleted"  reRender="adventures, inadventure ,endadventure, refreshJs, feed"/>
 		<apex:actionFunction action="{!playTimerExpired}" name="playTimerExpired"  reRender="adventures, inadventure ,endadventure, refreshJs, feed"/>
 		<apex:actionFunction action="{!startTimerExpired}" name="startTimerExpired"  reRender="adventures, inadventure ,endadventure, refreshJs, feed"/>
+		<apex:actionFunction action="{!startQuest}" name="startQuest" reRender="adventures, inadventure ,endadventure, refreshJs, feed, thefeed"/>
 
 		<apex:outputPanel id="inadventure">
 
@@ -251,7 +258,7 @@
 			</apex:outputPanel>
 
 			<br/>
-
+<apex:commandLink action="{!reset}" value="reset"/>
 			<div>
 				<a href="#" onclick="beacon.playChannel(0);">Station 1</a>&nbsp;&nbsp;
 				<a href="#" onclick="beacon.playChannel(1);">Station 2</a>&nbsp;&nbsp;
@@ -293,7 +300,6 @@
 
 					<!-- We're loading the tape -->
 					<p>{!currentadventure.currentQuest.LoadingText}</p>
-					<p>It's loaded and in the queue</p>
 					<p id="startTimer"></p>
 
 					<apex:commandLink onclick="clearTimeout(beacon.sTimer);" action="{!startQuest}" value="Start" reRender="adventures, inadventure ,endadventure, refreshJs, feed, thefeed"/>

@@ -148,12 +148,12 @@ public with sharing class BeaconHomeController {
 
         Events oeRet = new Events();
         AdventureWrapper lvl = new AdventureWrapper(levelName);
+        IQuest q3 = lvl.getCurrentQuest();
 
         // Have they successfully answered the quest?
         if(lvl.getCurrentQuestSettings().Answered__c){
             
             oeRet.CurrentQuestAnswered = true;
-            IQuest q3 = lvl.getCurrentQuest();
             oeRet.CorrectAnswerAudio = q3.getCorrectAnswerAudioClips();
             oeRet.CorrectImage = q3.getCorrectImageUrl();
 
@@ -171,6 +171,7 @@ public with sharing class BeaconHomeController {
 
         // Populate audio events
         oeRet.AudioEvents = getAudioEvents(levelName, lastCheckLevel, thisCheckLevel, lastCheckQuest, thisCheckQuest);
+        oeRet.Action = q3.getAction();
 
         system.debug('oeRet ' + oeRet);
 
@@ -262,6 +263,7 @@ public with sharing class BeaconHomeController {
         public List<AudioEvent> CorrectAnswerAudio {get; set;}
         public List<AudioEvent> AudioEvents {get; set;}
         public String CorrectImage {get; set;}
+        public String Action {get; set;}
 
         public Events(){
             RefreshChatter = false;

@@ -20,4 +20,7 @@ global interface IQuest {
 	List<AudioEvent> getWrongAnswerAudioClips(); // reserved for future use
 
 	String getCorrectImageUrl();
+
+	String getAction();
+
 }

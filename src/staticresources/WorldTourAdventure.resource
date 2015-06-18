@@ -3,5 +3,5 @@
 	"Filename": "WorldTourAdventure",
 	"Description": "The World Tour Adventure",
 	"AllowedDuration": 600000,
-	"FirstQuestFileName": "Quest1"
+	"FirstQuestFileName": "Example1"
 }
