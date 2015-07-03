@@ -1,0 +1,3 @@
+<apex:page controller="SimDataGenController" showHeader="true" sidebar="true" >
+	<apex:sectionHeader title="Done!" subtitle="Ready for the adventure!" />
+</apex:page>

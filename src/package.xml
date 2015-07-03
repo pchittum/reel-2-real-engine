@@ -17,11 +17,17 @@
 		<members>QuestFile</members>
 		<members>QuestFromFile</members>
 		<members>QuestTest</members>
+		<members>SimDataGenControllerTest</members>
 		<members>SimDataGenController</members>
 		<members>SimDataGenerator</members>
 		<name>ApexClass</name>
 	</types>
 	<types>
+		<members>sim_page_datagen_userrecs</members>
+		<members>sim_page_datagen_usercreate</members>
+		<members>sim_page_datagen_userdeactivate</members>
+		<members>sim_page_datagen_result</members>
+		<members>sim_page_datagen_checkdone</members>
 		<members>sim_page_datagen_generic</members>
 		<members>sim_page_datagen_launch</members>
 		<members>AdventureForceHome</members>
