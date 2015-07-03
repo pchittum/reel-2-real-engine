@@ -15,7 +15,7 @@ public with sharing class SimDataGenController {
 		users.add(new UserTracker(SimDataGenerator.makeUser(SimDataGenerator.kHugoFirst,SimDataGenerator.kHugoLast,SimDataGenerator.kHugoUser)));
 		users.add(new UserTracker(SimDataGenerator.makeUser(SimDataGenerator.kDottFirst,SimDataGenerator.kDottLast,SimDataGenerator.kDottUser)));
 		users.add(new UserTracker(SimDataGenerator.makeUser(SimDataGenerator.kMillyFirst,SimDataGenerator.kMillyLast,SimDataGenerator.kMillyUser)));
-		users.add(new UserTracker(SimDataGenerator.makeUser(SimDataGenerator.kLorraineFirst,SimDataGenerator.kLorraineLast,SimDataGenerator.kLorraineUser)));
+		users.add(new UserTracker(SimDataGenerator.makeUser(SimDataGenerator.kLorraineFirst,SimDataGenerator.kLorraineLast,SimDataGenerator.kLorraineUser), true));
 
 		String runMode = ApexPages.currentPage().getParameters().get('mode');
 		isTestRun = runMode != null && runMode.equals('test');
@@ -49,6 +49,8 @@ public with sharing class SimDataGenController {
 
 	    // Not nice should check we have the right user but it will do for now
 	    Beacon.saveSetting('TheGuideId', this.users[3].usr.Id);
+
+	    Beacon.registerAdventure(new AdventureFromFile('WorldTourAdventure'));
 
     	return null;
 
@@ -107,7 +109,9 @@ public with sharing class SimDataGenController {
 
 	public PageReference deactivateUser(){ //step 4: repeat once per user deactivate the user to preserve license count
 
-		if (!Test.isRunningTest() && !isTestRun) SimDataGenerator.deactivateUser(users.get(userIndex).usr);
+		if (!Test.isRunningTest() && !isTestRun && !users.get(userIndex).leaveActive){
+			SimDataGenerator.deactivateUser(users.get(userIndex).usr);
+		}
 
 		if (!users.isEmpty()) users.get(userIndex++).isCreated = true;
 		return Page.sim_page_datagen_checkdone;
@@ -146,6 +150,7 @@ public with sharing class SimDataGenController {
 
 	public class UserTracker {
 		public boolean isCreated {get;set;}
+		public boolean leaveActive {get; set;}
 		public User usr {get;set;}
 
 		public UserTracker(){
@@ -154,7 +159,15 @@ public with sharing class SimDataGenController {
 
 		public UserTracker(User u){
 			isCreated = false;
+			leaveActive = false;
 			usr = u;
 		}
+
+		public UserTracker(User u, Boolean leaveActive){
+			isCreated = false;
+			leaveActive = leaveActive;
+			usr = u;
+		}
+
 	}
 }
