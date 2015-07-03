@@ -28,6 +28,14 @@
 		<name>ApexTrigger</name>
 	</types>
 	<types>
+		<members>*</members>
+		<name>CustomTab</name>
+	</types>
+	<types>
+		<members>Wonderforce</members>
+		<name>CustomApplication</name>
+	</types>
+	<types>
 		<members>Audio_Event__c.Channel__c</members>
 		<members>Audio_Event__c.ResourceUrl__c</members>
 		<members>Audio_Event__c.Volume_Percentage__c</members>
