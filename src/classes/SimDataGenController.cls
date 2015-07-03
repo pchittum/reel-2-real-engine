@@ -167,7 +167,7 @@ public with sharing class SimDataGenController {
 
 		public UserTracker(User u, Boolean leaveActive){
 			isCreated = false;
-			leaveActive = leaveActive;
+			this.leaveActive = leaveActive;
 			usr = u;
 		}
 
