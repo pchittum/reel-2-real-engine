@@ -35,6 +35,10 @@
 		<name>ApexPage</name>
 	</types>
 	<types>
+		<members>Wonderforce</members>
+		<name>PermissionSet</name>
+	</types>
+	<types>
 		<members>FeedCommentTrigger</members>
 		<name>ApexTrigger</name>
 	</types>
