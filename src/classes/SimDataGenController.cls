@@ -109,11 +109,11 @@ public with sharing class SimDataGenController {
 
 	public PageReference deactivateUser(){ //step 4: repeat once per user deactivate the user to preserve license count
 
-		if (!Test.isRunningTest() && !isTestRun && !users.get(userIndex).leaveActive){
+		if (!Test.isRunningTest() && !isTestRun && !users.get(userIndex++).leaveActive){
 			SimDataGenerator.deactivateUser(users.get(userIndex).usr);
 		}
 
-		if (!users.isEmpty()) users.get(userIndex++).isCreated = true;
+		if (!users.isEmpty()) users.get(userIndex).isCreated = true;
 		return Page.sim_page_datagen_checkdone;
 	}
 
