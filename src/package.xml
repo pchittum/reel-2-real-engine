@@ -17,6 +17,7 @@
 		<members>QuestFile</members>
 		<members>QuestFromFile</members>
 		<members>QuestTest</members>
+		<members>SimDataGenController</members>
 		<name>ApexClass</name>
 	</types>
 	<types>
