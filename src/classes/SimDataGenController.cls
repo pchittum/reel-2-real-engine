@@ -15,9 +15,43 @@ public with sharing class SimDataGenController {
 		users.add(new UserTracker(SimDataGenerator.makeUser(SimDataGenerator.kHugoFirst,SimDataGenerator.kHugoLast,SimDataGenerator.kHugoUser)));
 		users.add(new UserTracker(SimDataGenerator.makeUser(SimDataGenerator.kDottFirst,SimDataGenerator.kDottLast,SimDataGenerator.kDottUser)));
 		users.add(new UserTracker(SimDataGenerator.makeUser(SimDataGenerator.kMillyFirst,SimDataGenerator.kMillyLast,SimDataGenerator.kMillyUser)));
+		users.add(new UserTracker(SimDataGenerator.makeUser(SimDataGenerator.kLorraineFirst,SimDataGenerator.kLorraineLast,SimDataGenerator.kLorraineUser)));
 
 		String runMode = ApexPages.currentPage().getParameters().get('mode');
 		isTestRun = runMode != null && runMode.equals('test');
+	}
+
+	public PageReference assignPermissionSet(){
+
+		List<PermissionSet> sets = [SELECT Id FROM PermissionSet WHERE Name = 'Wonderforce'];
+
+		if(!sets.isEmpty()){
+
+			Integer count = [SELECT COUNT() FROM PermissionSetAssignment WHERE PermissionSetId = :sets[0].Id AND AssigneeId = :UserInfo.getUserId()];
+
+			if(count == 0){
+				PermissionSetAssignment assign = new PermissionSetAssignment(PermissionSetId=sets[0].Id, AssigneeId=UserInfo.getUserId());
+				insert assign;
+			}
+
+		}
+
+		return null;
+	}
+
+	public PageReference createGameVars(){
+
+	    CollaborationGroup g = new CollaborationGroup(Name='Memtape Research', CollaborationType='Public');
+	    g.OwnerId = UserInfo.getUserId() ;
+	    insert g;
+
+	    Beacon.saveSetting('TheGroupId', g.Id);
+
+	    // Not nice should check we have the right user but it will do for now
+	    Beacon.saveSetting('TheGuideId', this.users[3].usr.Id);
+
+    	return null;
+
 	}
 
 	public PageReference generateData(){ //invoked by button

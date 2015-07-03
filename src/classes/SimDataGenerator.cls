@@ -11,6 +11,9 @@ public class SimDataGenerator {
 	public static final String kDottFirst = 'Dott';
 	public static final String kDottLast = 'Minervudottir';
 	public static final String kDottUser = 'dott@wonderforce.com';
+	public static final String kLorraineFirst = 'Lorraine';
+	public static final String kLorraineLast = 'Minervudottir';
+	public static final String kLorraineUser = 'lorraine@wonderforce.com';
 	public static Id kProfileId; 
 
 	static {
