@@ -1,0 +1,7 @@
+<apex:page controller="SimDataGenController" showHeader="true" sidebar="true" >
+	<apex:pageMessages id="msg"/>
+	<apex:sectionHeader title="Sim Force Experience Data Generation" subtitle="Create data for {!UserCount} users" />
+	<apex:form >
+		<apex:commandButton action="{!generateData}" value="Generate Data" />
+	</apex:form>
+</apex:page>

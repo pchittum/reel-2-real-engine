@@ -20,6 +20,8 @@
 		<name>ApexClass</name>
 	</types>
 	<types>
+		<members>sim_page_datagen_launch</members>
+		<members>AdventureForceHome</members>
 		<members>BeaconHome</members>
 		<name>ApexPage</name>
 	</types>
