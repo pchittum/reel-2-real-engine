@@ -25,6 +25,10 @@ public class QuestTest implements IQuest{
 		return '';
 	}
 
+	public String getAction(){
+		return null;
+	}
+	
 	public IQuest getNextQuest(){
 		return null;
 	}

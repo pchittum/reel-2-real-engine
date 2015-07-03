@@ -67,16 +67,33 @@ global class QuestFromFile implements IQuest{
 		Boolean correct = false;
 		Integer idx = 0;
 
-		for(QuestFile.Answer ans : theFile.answers){
-			if(input == ans.answer){
-				ret = new ChatterEvent(new FeedComment());
-				ret.PostComment.CommentBody = ans.response;
-				Beacon.saveSetting(theFile.filename + ';audio', String.valueOf(idx));
-				Beacon.markQuestAnswered(this);
-				correct = true;
-				break;
+		if(theFile.IncorrectResponses.isEmpty()){
+			ret = new ChatterEvent(new FeedComment());
+			ret.PostComment.CommentBody = theFile.answers[0].response;
+			if(!String.isBlank(theFile.answers[0].action)){
+				Beacon.saveSetting(theFile.filename + ';action', theFile.answers[0].action);					
 			}
-			idx++;
+			Beacon.markQuestAnswered(this);
+			correct = true;
+		}else{
+
+			for(QuestFile.Answer ans : theFile.answers){
+				system.debug('ans ' + ans);
+				if(input == ans.answer){
+					ret = new ChatterEvent(new FeedComment());
+					ret.PostComment.CommentBody = ans.response;
+					if(ans.Complete){
+						Beacon.saveSetting(theFile.filename + ';audio', String.valueOf(idx));					
+						Beacon.markQuestAnswered(this);
+					}
+					if(!String.isBlank(ans.action)){
+						Beacon.saveSetting(theFile.filename + ';action', ans.action);					
+					}
+					correct = true;
+					break;
+				}
+				idx++;
+			}
 		}
 
 		if(!correct){
@@ -126,6 +143,14 @@ global class QuestFromFile implements IQuest{
 
 	}
 
+	public String getAction(){
+
+		String ret = Beacon.readSetting(theFile.fileName + ';action');
+		Beacon.deleteSetting(theFile.fileName + ';action');
+
+		return ret;
+
+	}
 
 	public List<AudioEvent> getCorrectAnswerAudioClips(){
 		

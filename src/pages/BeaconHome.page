@@ -2,11 +2,13 @@
 
 	<apex:includeScript value="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js" />
 	<apex:includeScript value="/canvas/sdk/js/29.0/publisher.js"/>
+	<apex:stylesheet value="{!$Resource.style}"/>
 	<script type="text/javascript">
 
 		$(document).ready(function(){
+			$('#channelSoundTrack').prop('volume', 0.5);
 			$('#channelSoundTrack').attr('src', beacon.soundTracks[0]);
-			$('#channelSoundTrack').trigger('play');
+			//$('#channelSoundTrack').trigger('play');
 		});
 
 		var beacon = beacon || {};
@@ -39,11 +41,6 @@
 				clearTimeout(beacon.pTimer);
 			}
 
-			//var diffMinutes = Math.floor(beacon.quest.playDuration / 60);
-			//var diffSecs = Math.floor(beacon.quest.playDuration - (diffMinutes * 60));
-
-			//$('#playTimer').html('You have <h1>' + paddy(diffMinutes, 2) + ':' + paddy(diffSecs, 2) + '</h1> of tape left.');
-
 			beacon.quest.playDuration--;
 		};
 
@@ -58,11 +55,6 @@
 
 				clearTimeout(beacon.sTimer);
 			}
-
-			//var diffMinutes = Math.floor(beacon.quest.startDuration / 60);
-			//var diffSecs = Math.floor(beacon.quest.startDuration - (diffMinutes * 60));
-
-			//$('#startTimer').html('You have <h1>' + paddy(diffMinutes, 2) + ':' + paddy(diffSecs, 2) + '</h1> before the tape is dequeued.');
 
 			beacon.quest.startDuration--;
 
@@ -89,6 +81,37 @@
 
 		}
 
+		beacon.playChannel = function(channelNumber){
+			$('#channelSoundTrack').attr('src', beacon.soundTracks[channelNumber]);
+			$('#channelSoundTrack').trigger('play');
+
+			$('.b12-radio-buttons a').removeClass('selected');
+			$('#chan' + channelNumber).addClass('selected');
+
+			$('.b12-radio-screen-station').html('Station ' + (channelNumber+1));
+
+		};
+
+		beacon.volumeUp = function(){
+			var vol = parseFloat($('#channelSoundTrack').prop('volume'));
+			vol += 0.05;
+			if(vol > 1){
+				vol = 1;
+			}
+			$('#channelSoundTrack').prop('volume', vol);
+			$('#volPct').html(parseInt(vol * 100) + '%');
+		};
+
+		beacon.volumeDown = function(){
+			var vol = parseFloat($('#channelSoundTrack').prop('volume'));
+			vol -= 0.05;
+			if(vol < 0){
+				vol = 0;
+			}
+			$('#channelSoundTrack').prop('volume', vol);
+			$('#volPct').html(parseInt(vol * 100) + '%');
+		};
+
 		function paddy(n, p, c) {
 		    var pad_char = typeof c !== 'undefined' ? c : '0';
 		    var pad = new Array(1 + p).join(pad_char);
@@ -101,10 +124,14 @@
 
 			if(channelNo < 5 && $('#channelDialogue' + channelNo).data('hasnext') == true){
 				$('#channelDialogue' + (channelNo + 1)).trigger('play');
-				 Visualforce.remoting.Manager.invokeAction(
-            		'{!$RemoteAction.BeaconHomeController.moveTape}',
-            		$('#channelDialogue' + (channelNo + 1)).duration,
-            		function(){});
+
+				var dur = parseInt($('#channelDialogue' + (channelNo + 1)).prop('duration'));
+				if(dur !== undefined && dur != null){
+					 Visualforce.remoting.Manager.invokeAction(
+	            		'{!$RemoteAction.BeaconHomeController.moveTape}',
+	            		$('#channelDialogue' + (channelNo + 1)).duration,
+	            		function(){});
+				}
 
 				return;
 			}
@@ -123,15 +150,18 @@
 		function pauseAllChannelsAndPlayDialogue(){
 			$('#channel0').trigger('pause');
 			$('#channelSoundTrack').trigger('pause');
-			setTimeout(playDialogue, 2000);
+			setTimeout(playDialogue, 1000);
 		};
 
 		function playDialogue(){
 			$('#channelDialogue0').trigger('play');
-			 Visualforce.remoting.Manager.invokeAction(
-        		'{!$RemoteAction.BeaconHomeController.moveTape}',
-        		$('#channelDialogue0').duration,
-        		function(){});
+			var dur = parseInt($('#channelDialogue0').prop('duration'));
+			if(dur !== undefined && dur != null){
+				 Visualforce.remoting.Manager.invokeAction(
+	        		'{!$RemoteAction.BeaconHomeController.moveTape}',
+	        		dur,
+	        		function(){});
+				}
 
 			window.scrollTo(0, 0);
 			$('div[id$="cassette"]').hide();
@@ -142,6 +172,12 @@
 
 			if(result.CorrectImage != null && result.CorrectImage != ''){
 				$('#playingImage').attr('src', result.CorrectImage);
+			}
+
+			if(result.Action == 'playRadio'){
+				$('#channelSoundTrack').trigger('play');
+				chatter.getFeed().showNewUpdates();
+				return;
 			}
 
 			if(result.CorrectAnswerAudio.length > 0){
@@ -216,7 +252,7 @@
 	<apex:form id="everything">
 
 		<audio id="channel0"/>
-		<audio id="channelSoundTrack" />
+		<audio id="channelSoundTrack" volume="0.3"/>
 		<audio id="channelDialogue0" />
 		<audio id="channelDialogue1" />
 		<audio id="channelDialogue2" />
@@ -227,46 +263,65 @@
 		<apex:actionFunction action="{!allCompleted}" name="allCompleted"  reRender="adventures, inadventure ,endadventure, refreshJs, feed"/>
 		<apex:actionFunction action="{!playTimerExpired}" name="playTimerExpired"  reRender="adventures, inadventure ,endadventure, refreshJs, feed"/>
 		<apex:actionFunction action="{!startTimerExpired}" name="startTimerExpired"  reRender="adventures, inadventure ,endadventure, refreshJs, feed"/>
-
-		<!--
-		<apex:outputPanel id="adventures">
-
-			<apex:outputPanel id="p1" rendered="{!pageStatus == 'ADVENTURES'}">
-				<h1>Simulation</h1><br/><br/>
-
-				<apex:dataTable value="{!adventures}" var="adventure" cellpadding="5px">
-					<apex:column value="{!adventure.adventureDetails.Name}" headerValue="adventure Name" />
-					<apex:column value="{!adventure.adventureDetails.Description}" headerValue="Synopsis" />
-
-					<apex:column value="{!adventure.adventureSettings.Completed__c}" headerValue="Completed" />
-					<apex:column value="{!adventure.adventureSettings.Attempts__c}" headerValue="Attempts" />
-
-					<apex:column >
-						<apex:commandLink value="Start" action="{!Startadventure}" rendered="{!ISNULL(InPlayName)}" reRender="adventures, inadventure ,endadventure, refreshJs, feed">
-							<apex:param name="currentadventure" assignTo="{!currentadventureName}" value="{!adventure.adventureSettings.Name}"/>
-						</apex:commandLink>
-						<apex:commandLink value="Continue" action="{!Startadventure}" reRender="adventures, inadventure ,endadventure, refreshJs, feed" rendered="{!InPlayName == adventure.adventureSettings.Name}">
-							<apex:param name="currentadventure" assignTo="{!currentadventureName}" value="{!adventure.adventureSettings.Name}"/>
-						</apex:commandLink>
-					</apex:column>
-					<apex:column >
-						<apex:commandLink value="Reset (for testing)" action="{!reset}" reRender="adventures, inadventure ,endadventure, refreshJs">
-							<apex:param name="currentadventure" assignTo="{!currentadventureName}" value="{!adventure.adventureSettings.Name}"/>
-						</apex:commandLink>
-					</apex:column>
-
-				</apex:dataTable>
-
-			</apex:outputPanel>
-		</apex:outputPanel>
-
-		-->
+		<apex:actionFunction action="{!startQuest}" name="startQuest" reRender="adventures, inadventure ,endadventure, refreshJs, feed, thefeed"/>
 
 		<apex:outputPanel id="inadventure">
 
 			<apex:outputPanel layout="block" id="cassette">
 				<apex:image url="{!$Resource.pause}" width="500" />
 			</apex:outputPanel>
+
+			<div class="b12-radio-container">
+
+				<div class="b12-dial">
+					<div class="inner dial"  onclick="beacon.volumeDown();">
+						<span class="label">-</span>
+						<b class="shadow shadow-out"></b>
+						<b class="shadow shadow-in"></b>
+					</div>
+				</div>
+
+				<div class="b12-radio-center">
+					<div class="b12-radio-screen">
+						<div class="b12-radio-screen-station">
+							No Station
+						</div>
+						<div class="b12-radio-screen-vol">
+							<div class="b12-radio-screen-vol-label">
+								Vol
+							</div>
+							<div id="volPct" class="b12-radio-screen-vol-value">
+								50%
+							</div>				
+						</div>
+					</div>
+					<div class="b12-radio-buttons">
+						<ul>
+							<li><a href="#" id="chan0" onclick="beacon.playChannel(0);">1</a></li>
+							<li><a href="#" id="chan1" onclick="beacon.playChannel(1);">2</a></li>
+							<li><a href="#" id="chan2" onclick="beacon.playChannel(2);">3</a></li>
+							<li><a href="#" id="chan3" onclick="beacon.playChannel(3);">4</a></li>
+							<li><a href="#" id="chan4" onclick="beacon.playChannel(4);">5</a></li>
+							<li><a href="#" id="chan5" onclick="beacon.playChannel(5);">6</a></li>
+							<li><a href="#" id="chan6" onclick="beacon.playChannel(6);">7</a></li>
+							<li><a href="#" id="chan7" onclick="beacon.playChannel(7);">8</a></li>
+						</ul>																										
+					</div>
+				</div>
+				
+				<div class="b12-dial">
+					<div class="inner dial" onclick="beacon.volumeUp();">
+						<span class="label">+</span>
+						<b class="shadow shadow-out"></b>
+						<b class="shadow shadow-in"></b>
+					</div>
+				</div>
+
+				
+			</div>
+
+
+			<br/>
 
 			<apex:outputPanel rendered="{!pageStatus == 'INADVENTURE'}">
 				<!-- Put the game play stuff in here -->
@@ -288,7 +343,6 @@
 
 					<!-- We're loading the tape -->
 					<p>{!currentadventure.currentQuest.LoadingText}</p>
-					<p>It's loaded and in the queue</p>
 					<p id="startTimer"></p>
 
 					<apex:commandLink onclick="clearTimeout(beacon.sTimer);" action="{!startQuest}" value="Start" reRender="adventures, inadventure ,endadventure, refreshJs, feed, thefeed"/>

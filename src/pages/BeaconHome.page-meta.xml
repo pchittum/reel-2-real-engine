@@ -6,6 +6,11 @@
     <label>BeaconHome</label>
     <packageVersions>
         <majorNumber>1</majorNumber>
+        <minorNumber>8</minorNumber>
+        <namespace>sf_chttr_apps</namespace>
+    </packageVersions>
+    <packageVersions>
+        <majorNumber>1</majorNumber>
         <minorNumber>6</minorNumber>
         <namespace>sf_com_apps</namespace>
     </packageVersions>

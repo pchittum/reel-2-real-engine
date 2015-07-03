@@ -62,6 +62,16 @@
         <type>Checkbox</type>
     </fields>
     <fields>
+        <fullName>Created_Time__c</fullName>
+        <externalId>false</externalId>
+        <formula>CreatedDate</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Created Time</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
         <fullName>OpenDrawer__c</fullName>
         <defaultValue>false</defaultValue>
         <description>When this is set to true, the drawer will open and the push button will pulse.  When they hit the button, the drawer will close and the Completed flag will be set.</description>
@@ -98,9 +108,8 @@
         <columns>OBJECT_ID</columns>
         <columns>NAME</columns>
         <columns>Completed__c</columns>
-        <columns>OpenDrawer__c</columns>
-        <columns>PulseStartLED__c</columns>
         <columns>SecondsToMoveTape__c</columns>
+        <columns>Created_Time__c</columns>
         <filterScope>Everything</filterScope>
         <label>All</label>
     </listViews>

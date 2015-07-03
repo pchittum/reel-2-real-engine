@@ -9,18 +9,19 @@
 					{
 						"answer": "Sputter340", 
 						"response": "You rule! ",
+			            "complete": true,
 						"correctAudio": ["https://djmt6dfrfwodk.cloudfront.net/wp-content/uploads/beacon/scenes/cust_s25.mp3"]
 					}
 				],
     "IncorrectResponses":[
         {
-            "response": "Try again 1"
+            "response": "The name should be hidden in the debug log, try looking again."
         },
         {
-            "response": "Try again 2"
+            "response": "I don't think that's it either."
         },
         {
-            "response": "Try again 3"
+            "response": "Please enter: Sputter340"
         }
 
     ],

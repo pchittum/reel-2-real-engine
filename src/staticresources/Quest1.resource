@@ -9,6 +9,7 @@
         {
             "answer": "Memtape 5000",
             "response": "Great - Lets try Reel No 3.",
+            "complete": true,
             "correctAudio": [
                 "https://djmt6dfrfwodk.cloudfront.net/wp-content/uploads/beacon/scenes/cust_s03.mp3"
             ]
@@ -16,13 +17,13 @@
     ],
     "IncorrectResponses":[
         {
-            "response": "Try again 1"
+            "response": "Is that in the Chatter Feed?"
         },
         {
-            "response": "Try again 2"
+            "response": "My notes seem to suggest the model number was 5000."
         },
         {
-            "response": "Try again 3"
+            "response": "Please enter: Memtape 5000"
         }
 
     ],

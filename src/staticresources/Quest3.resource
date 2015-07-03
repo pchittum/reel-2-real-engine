@@ -9,20 +9,17 @@
 					{
 						"answer": "Hugo", 
 						"response": "Hmmm that name rings a bell. Lets listen to Reel No 13.",
+			            "complete": true,
 						"correctAudio": ["https://djmt6dfrfwodk.cloudfront.net/wp-content/uploads/beacon/scenes/cust_s13.mp3"]
 					}
 				],
     "IncorrectResponses":[
         {
-            "response": "Try again 1"
+            "response": "How'd you get that answer, it's miles off. Have another go."
         },
         {
-            "response": "Try again 2"
-        },
-        {
-            "response": "Try again 3"
+            "response": "Pleas enter: Hugo"
         }
-
     ],
 	"nextQuest": "Quest4"
 }
