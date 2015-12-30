@@ -1,0 +1,84 @@
+<apex:page showHeader="true" sidebar="false" controller="BeaconHomeController">
+    
+    <apex:includeScript value="//f.vimeocdn.com/js/froogaloop2.min.js"/>
+	<apex:includeScript value="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"/>    
+
+    <script type="text/javascript">
+    
+    	$(function() {
+            var iframe = $('#player1')[0];
+            var player = $f(iframe);
+        
+            // When the player is ready, add listeners for pause, finish, and playProgress
+            player.addEvent('ready', function() {
+                player.addEvent('finish', onFinish);
+            });
+            
+            function onFinish(id) {
+                $('#chat').show();
+            }            
+        });
+
+		$(document).ready(function(){
+
+			rTest.cleanDown();
+		});
+
+
+		var rTest = rTest || {};
+
+		rTest.cleanDown = function(){
+			reset();
+		};    
+    </script>
+	<style>
+		.btnC {
+		  -webkit-border-radius: 28;
+		  -moz-border-radius: 28;
+		  border-radius: 28px;
+		  font-family: Arial;
+		  color: #ffffff;
+		  font-size: 20px;
+		  background: #16c739;
+		  padding: 10px 20px 10px 20px;
+		  text-decoration: none;
+		}
+
+		.btnC:hover {
+		  background: #3cb0fd;
+		  background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+		  background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
+		  background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
+		  background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
+		  background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+		  text-decoration: none;
+		}	
+        .center {
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }        
+	</style>
+    
+    <br/>
+    <apex:form >
+        <apex:actionFunction action="{!Reset}" name="reset" reRender="theImage">
+			<apex:param name="currentadventure" assignTo="{!currentadventureName}" value="431324486"/>
+		</apex:actionFunction>
+
+        <div class="center">
+            <div>
+                <iframe id="player1" src="//player.vimeo.com/video/131036280?api=1&player_id=player1" width="640" height="480" frameborder="0" webkitallowfullscreen="1" mozallowfullscreen="1" allowfullscreen="1"></iframe>
+            </div>
+    
+        </div>
+    
+        <div class="center" id="chat" style="margin-top: 20px;">
+            <button class="btnC" id="chat" type="button" onclick="window.open('/apex/beaconhome', '_blank', 'width=500, height=1024');">
+                Open Chat
+            </button>
+        </div>   
+    </apex:form>
+    
+    
+</apex:page>

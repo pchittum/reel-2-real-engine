@@ -47,9 +47,12 @@
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
     <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
     <enableFeeds>false</enableFeeds>
     <enableHistory>false</enableHistory>
-    <enableReports>false</enableReports>
+    <enableReports>true</enableReports>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
     <fields>
         <fullName>Completed__c</fullName>
         <defaultValue>false</defaultValue>
@@ -59,8 +62,19 @@
         <type>Checkbox</type>
     </fields>
     <fields>
+        <fullName>Created_Time__c</fullName>
+        <externalId>false</externalId>
+        <formula>CreatedDate</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Created Time</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
         <fullName>OpenDrawer__c</fullName>
         <defaultValue>false</defaultValue>
+        <description>When this is set to true, the drawer will open and the push button will pulse.  When they hit the button, the drawer will close and the Completed flag will be set.</description>
         <externalId>false</externalId>
         <label>OpenDrawer</label>
         <trackTrending>false</trackTrending>
@@ -69,6 +83,7 @@
     <fields>
         <fullName>PulseStartLED__c</fullName>
         <defaultValue>false</defaultValue>
+        <description>When this is set, the machine will pulse the button LED and then when they press the button, the LED will go out and the Completed flag will be set by the machine.</description>
         <externalId>false</externalId>
         <label>PulseStartLED</label>
         <trackTrending>false</trackTrending>
@@ -76,22 +91,57 @@
     </fields>
     <fields>
         <fullName>SecondsToMoveTape__c</fullName>
+        <defaultValue>0</defaultValue>
+        <description>When this is a non zero value, the machine will take the number of seconds given and move the reels back and forward for that period of time.  The way it calcs how long to run is by dividing the amount by 2 until the number is less than 30 (as this is the max we can spin one way without breaking the tape) and then runs the tape for that amount of times back and forward for the number of times it divided by 2.  So 90 seconds would be divided to 45 (too long), and then to 22.5.  Since this is &lt; 30, use this time and since we divided twice, go back and forward twice.  The completed flag is set when finished.</description>
         <externalId>false</externalId>
         <label>SecondsToMoveTape</label>
         <precision>18</precision>
-        <required>false</required>
+        <required>true</required>
         <scale>0</scale>
         <trackTrending>false</trackTrending>
         <type>Number</type>
         <unique>false</unique>
     </fields>
     <label>Machine Request</label>
+    <listViews>
+        <fullName>All</fullName>
+        <columns>OBJECT_ID</columns>
+        <columns>NAME</columns>
+        <columns>Completed__c</columns>
+        <columns>SecondsToMoveTape__c</columns>
+        <columns>Created_Time__c</columns>
+        <filterScope>Everything</filterScope>
+        <label>All</label>
+    </listViews>
     <nameField>
-        <displayFormat>MR-{0}</displayFormat>
-        <label>Machine Request Name</label>
+        <displayFormat>MR-{0000000000}</displayFormat>
+        <label>Machine Request Id</label>
         <type>AutoNumber</type>
     </nameField>
     <pluralLabel>Machine Requests</pluralLabel>
     <searchLayouts/>
     <sharingModel>ReadWrite</sharingModel>
+    <validationRules>
+        <fullName>CanOnlyHaveOneRequest</fullName>
+        <active>true</active>
+        <description>Only one thing at a time...</description>
+        <errorConditionFormula>(if (OpenDrawer__c, 1, 0) + 
+ if (PulseStartLED__c, 1, 0) +
+ if (SecondsToMoveTape__c &gt; 0, 1, 0)) &gt; 1</errorConditionFormula>
+        <errorMessage>You can only do one thing at a time...</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>MustHaveARequest</fullName>
+        <active>true</active>
+        <description>Must have something for the machine to do</description>
+        <errorConditionFormula>!OpenDrawer__c &amp;&amp; !PulseStartLED__c &amp;&amp; (SecondsToMoveTape__c = 0)</errorConditionFormula>
+        <errorMessage>You must enter something for the machine to do...</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>SecondsMustBePositive</fullName>
+        <active>true</active>
+        <errorConditionFormula>SecondsToMoveTape__c &lt; 0</errorConditionFormula>
+        <errorDisplayField>SecondsToMoveTape__c</errorDisplayField>
+        <errorMessage>The SecondsToMoveTape cannot be negative</errorMessage>
+    </validationRules>
 </CustomObject>

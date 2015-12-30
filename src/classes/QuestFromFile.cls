@@ -39,6 +39,10 @@ global class QuestFromFile implements IQuest{
 		return new List<AudioEvent>();
 	}
 
+	public String getCorrectImageUrl(){
+		return theFile.CorrectImageUrl;
+	}
+
 	public List<ChatterEvent> getChatterEvents(){
 		return new List<ChatterEvent>();
 	}
@@ -63,16 +67,33 @@ global class QuestFromFile implements IQuest{
 		Boolean correct = false;
 		Integer idx = 0;
 
-		for(QuestFile.Answer ans : theFile.answers){
-			if(input == ans.answer){
-				ret = new ChatterEvent(new FeedComment());
-				ret.PostComment.CommentBody = ans.response;
-				Beacon.saveSetting(theFile.filename + ';audio', String.valueOf(idx));
-				Beacon.markQuestAnswered(this);
-				correct = true;
-				break;
+		if(theFile.IncorrectResponses.isEmpty()){
+			ret = new ChatterEvent(new FeedComment());
+			ret.PostComment.CommentBody = theFile.answers[0].response;
+			if(!String.isBlank(theFile.answers[0].action)){
+				Beacon.saveSetting(theFile.filename + ';action', theFile.answers[0].action);					
 			}
-			idx++;
+			Beacon.markQuestAnswered(this);
+			correct = true;
+		}else{
+
+			for(QuestFile.Answer ans : theFile.answers){
+				system.debug('ans ' + ans);
+				if(input == ans.answer){
+					ret = new ChatterEvent(new FeedComment());
+					ret.PostComment.CommentBody = ans.response;
+					if(ans.Complete){
+						Beacon.saveSetting(theFile.filename + ';audio', String.valueOf(idx));					
+						Beacon.markQuestAnswered(this);
+					}
+					if(!String.isBlank(ans.action)){
+						Beacon.saveSetting(theFile.filename + ';action', ans.action);					
+					}
+					correct = true;
+					break;
+				}
+				idx++;
+			}
 		}
 
 		if(!correct){
@@ -97,15 +118,35 @@ global class QuestFromFile implements IQuest{
 
 		ChatterEvent ret = new ChatterEvent(new FeedComment());
 
-		Integer rand = Integer.valueOf(Math.ceil(Math.random() * 2));
-
-		if(rand == 1){
-			ret.PostComment.CommentBody = 'Are you sure about that?';
-		}else if(rand == 2){
-			ret.PostComment.CommentBody = 'With answers like that you should just walk away from the computer, try again.';
-		}else{
-			ret.PostComment.CommentBody = 'I\'m sorry, I don\'t understand that.';
+		if(theFile.IncorrectResponses == null){
+			ret.PostComment.CommentBody = 'Please try again';
+			return ret;
 		}
+
+
+		String wrongIdx = Beacon.readSetting(theFile.filename + ';wrong_idx');
+		Integer idx = 0;
+
+		if(!String.isBlank(wrongIdx)){
+			idx = Integer.valueOf(wrongidx);
+		}
+
+		if(idx >= theFile.IncorrectResponses.size()){
+			idx = theFile.IncorrectResponses.size() - 1;
+		}
+
+		ret.PostComment.CommentBody = theFile.IncorrectResponses[idx].Response;
+
+		Beacon.saveSetting(theFile.filename + ';wrong_idx', String.valueOf(++idx));
+	
+		return ret;
+
+	}
+
+	public String getAction(){
+
+		String ret = Beacon.readSetting(theFile.fileName + ';action');
+		Beacon.deleteSetting(theFile.fileName + ';action');
 
 		return ret;
 

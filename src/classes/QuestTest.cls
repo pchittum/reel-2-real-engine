@@ -21,6 +21,14 @@ public class QuestTest implements IQuest{
 		return new List<ChatterEvent>();
 	}
 
+	public String getCorrectImageUrl(){
+		return '';
+	}
+
+	public String getAction(){
+		return null;
+	}
+	
 	public IQuest getNextQuest(){
 		return null;
 	}

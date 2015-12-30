@@ -1,0 +1,10 @@
+<apex:page controller="SimDataGenController" showHeader="true" sidebar="true" action="{!assignPermissionSet}">
+	<apex:pageMessages id="msg"/>
+    <apex:form >
+    	<apex:actionFunction action="{!populateGenericData}" name="doPageAction"/>
+    </apex:form>
+    <script>
+    	window.setTimeout(doPageAction,1000);
+    </script>
+	<apex:sectionHeader title="Creating Generic Data" subtitle="Creating data not linked to user records." />
+</apex:page>

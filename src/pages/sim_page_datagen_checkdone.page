@@ -1,0 +1,12 @@
+<apex:page controller="SimDataGenController" showHeader="true" sidebar="true" >
+	<apex:pageMessages id="msg"/>
+    <apex:form >
+    	<apex:actionFunction action="{!checkComplete}" name="doPageAction"/>
+    </apex:form>
+    
+    <script>
+    window.setTimeout(doPageAction,1000);
+    </script>
+
+	<apex:sectionHeader title="Hmmm...Is there more to do?" subtitle="We are either done or going to create another user." />
+</apex:page>
